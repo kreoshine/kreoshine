@@ -37,7 +37,7 @@ setup(
     python_requires='>=3.11',
     packages=find_packages(exclude=['tests']),
     install_requires=load_requirements('requirements.txt'),
-    # extras_require={'dev': load_requirements('requirements.dev.txt')},
+    extras_require={'deploy': load_requirements('deploy/requirements.txt')},
     entry_points={},  # todo: add entry point for app.__main__
     include_package_data=True
 )
