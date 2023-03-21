@@ -1,0 +1,8 @@
+---
+- name: Deploy of backend-service
+  hosts: target_host
+  gather_facts: true
+  become: false
+  tasks:
+    - name: just ping yourself
+      ansible.builtin.ping:
