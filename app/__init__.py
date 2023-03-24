@@ -25,7 +25,7 @@ from concurrent.futures import ThreadPoolExecutor
 import asyncio
 from aiohttp import web
 
-from settings import settings
+from settings import config
 
 logger = logging.getLogger('app')
 
@@ -37,7 +37,7 @@ async def on_app_start(app):
     Args:
         app: instance of the application
     """
-    asyncio.get_event_loop().set_default_executor(ThreadPoolExecutor(max_workers=settings.app['thread_pool_size']))
+    asyncio.get_event_loop().set_default_executor(ThreadPoolExecutor(max_workers=config.app['thread_pool_size']))
 
     logger.info('Init Database engine')
     # todo: implement database initialization
@@ -66,10 +66,10 @@ def create_app() -> web.Application:
     """
     Creates web application.
     """
-    logging.config.dictConfig(config=settings.logging)  # fixme: resolve path — /var/log/kreoshine/service.log
+    logging.config.dictConfig(config=config.logging)  # fixme: resolve path — /var/log/kreoshine/service.log
     sys.excepthook = handle_exception
 
-    app = web.Application(client_max_size=settings.app['client_max_size'])
+    app = web.Application(client_max_size=config.app['client_max_size'])
     app.on_startup.append(on_app_start)
     app.on_shutdown.append(on_app_stop)
 
