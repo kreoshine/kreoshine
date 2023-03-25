@@ -1,6 +1,0 @@
-[app]
-host = "127.0.0.1"
-port = "8080"
-thread_pool_size = 5
-access_log_format = "%a %{X-Real-IP}i %t \"%r\" %s %b \"%{User-Agent}i\" %D"
-client_max_size = 52428800
