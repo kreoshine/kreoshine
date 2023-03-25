@@ -1,2 +1,5 @@
-[target_host]
+[local]
+localhost ansible_connection=local
+
+[remote]
 localhost ansible_connection=local

@@ -1,8 +1,9 @@
 ---
-- name: Deploy of backend-service
-  hosts: target_host
+- name: Communication with '{{ host_name }}' host
+  hosts: "{{ host_name }}"
   gather_facts: true
   become: false
   tasks:
-    - name: just ping yourself
+    - name: Ansible ping with host {{ host_name }}
       ansible.builtin.ping:
+        data: "success"

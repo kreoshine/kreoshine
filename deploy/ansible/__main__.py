@@ -1,33 +1,47 @@
 """
-Entry point for deploy via ansible
+Automatic deployment with Ansible and ansible-runner
 """
 import asyncio
-from pathlib import Path
+from os import makedirs
 
 from concurrent.futures import ThreadPoolExecutor
 
+from deploy.ansible import ANSIBLE_PRIVATE_DATA_DIR, AnsibleExecutor
+from settings import config
 
-async def execute_shell_command(shell_command: str) -> None:
-    """
-    Executes 'shell' command  and optionality saves its output
+DEVELOPMENT_MODE = 'development'
+PRODUCTION_MODE = 'production'
 
-    Args:
-        shell_command: ansible command to execute
-    """
-    shell_process = await asyncio.create_subprocess_shell(cmd=shell_command,
-                                                          stdout=asyncio.subprocess.PIPE,
-                                                          stderr=asyncio.subprocess.PIPE)
-    stdout, stderr = await shell_process.communicate()
-    print(stderr.decode(encoding='utf-8'), stdout.decode(encoding='utf-8'))
+
+def create_ansible_dir_locally():
+    """ Creates directories in project dir (i.e. tmp/ansible) """
+    try:
+        makedirs(ANSIBLE_PRIVATE_DATA_DIR)
+        print(f"Directory {ANSIBLE_PRIVATE_DATA_DIR} successfully created")
+    except FileExistsError:
+        print(f"Directory {ANSIBLE_PRIVATE_DATA_DIR} already exist")
+        pass
+
+
+async def init_deploy():
+    """ Entry point for deployment initialization """
+    deploy_mode = config.deploy_mode
+    if deploy_mode == DEVELOPMENT_MODE:
+        target_host = 'local'
+    else:
+        assert deploy_mode == PRODUCTION_MODE, \
+            f"Only two modes of deployment is allowed: '{DEVELOPMENT_MODE}' and '{PRODUCTION_MODE}'"
+        target_host = 'remote'
+    print(f"Initiate '{deploy_mode}' mode of deployment")
+    ansible_executor = AnsibleExecutor(destination_host=target_host)
+    print(f"Successfully initiate instance of 'ansible executor' class for the '{target_host}' host")
+
+    echo_task = asyncio.create_task(ansible_executor.execute_echo_task())
+    await echo_task
+    print(f"Connection to {target_host} host available")
 
 
 if __name__ == '__main__':
-    asyncio.get_event_loop().set_default_executor(ThreadPoolExecutor(max_workers=2))
-
-    deploy_playbook = str(Path(__file__).parent.joinpath('playbooks/echo.yml'))
-    inventory_file = str(Path(__file__).parent.joinpath('hosts'))
-
-    asyncio.run(
-        execute_shell_command(
-            shell_command=f'ansible-playbook -v --inventory-file {inventory_file} {deploy_playbook}')
-    )
+    create_ansible_dir_locally()
+    asyncio.new_event_loop().set_default_executor(ThreadPoolExecutor(max_workers=2))
+    asyncio.run(init_deploy())
