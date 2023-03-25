@@ -5,6 +5,7 @@ asyncio==3.4.3
 cffi==1.15.1
 cryptography==40.0.1
 docutils==0.19
+dynaconf==3.1.12
 Jinja2==3.1.2
 lockfile==0.12.2
 MarkupSafe==2.1.2
