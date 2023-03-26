@@ -25,7 +25,7 @@ from concurrent.futures import ThreadPoolExecutor
 import asyncio
 from aiohttp import web
 
-from settings import config
+from deploy.settings import config
 
 logger = logging.getLogger('app')
 

@@ -4,7 +4,7 @@ Service running module
 from aiohttp import web
 
 from app import create_app
-from settings import config
+from deploy.settings import config
 
 
 if __name__ == '__main__':
