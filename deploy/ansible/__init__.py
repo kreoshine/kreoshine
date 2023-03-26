@@ -10,11 +10,10 @@ from typing import List
 import ansible_runner
 from ansible_runner import Runner, AnsibleRunnerException
 
-from deployment import PROJECT_DIR
+from deployment import TEMPORARY_DIR
 from ansible import ansible_const
 from ansible.exceptions import AnsibleExecuteError
 
-TEMPORARY_DIR = os.path.join(PROJECT_DIR, 'tmp/')  # todo: move to deployment/__init__
 ANSIBLE_PRIVATE_DATA_DIR = os.path.join(TEMPORARY_DIR, 'ansible/')
 
 PLAYBOOK_LOCATION_DIR = os.path.join(str(Path(__file__).parent), 'playbooks/')
