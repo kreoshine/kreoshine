@@ -32,6 +32,7 @@ python deploy/
 ***Steps below will be probably removed in the future for easily deployment!***
 
 Keep a little calm for some more action:
+
 8. Deactivate previous environment
 ```angular2html
 deactivate
@@ -47,12 +48,13 @@ source venv/bin/activate
 ```angular2html
 pip install -r pip-freeze.txt
 ```
-11. Try to run backend application 
-(for real moment it's not possible to use 'app' as a python package, sorry)
+11. Run backend application 
+```angular2html
+python run.py
+```
 
-Use some kind of IDE to execute
-
-13. Verify that the service.log file has been created in the 'tmp' directory located in the project dir. 
+12. Enjoy with develop:
+- Verify that the service.log file has been created in the 'tmp' directory located in the project dir. 
 (Probably it will appear in IDE after you stop service) 
 
 
