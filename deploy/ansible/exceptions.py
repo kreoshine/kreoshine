@@ -1,5 +1,5 @@
 """
-Deployment exceptions
+Ansible exceptions
 """
 
 

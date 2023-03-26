@@ -7,7 +7,7 @@ from os import makedirs
 
 from concurrent.futures import ThreadPoolExecutor
 
-from deploy.ansible import ANSIBLE_PRIVATE_DATA_DIR, AnsibleExecutor, TEMPORARY_DIR
+from ansible import ANSIBLE_PRIVATE_DATA_DIR, AnsibleExecutor, TEMPORARY_DIR
 from settings import config, DYNACONF_ROOT_PATH
 
 DEVELOPMENT_MODE = 'development'
