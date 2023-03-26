@@ -36,6 +36,16 @@ class AnsibleExecutor:
         return os.path.join(PLAYBOOK_LOCATION_DIR, 'echo.yml')
 
     @property
+    def file_line_update_playbook(self) -> str:
+        """ Location of the 'file_line_update' playbook file """
+        return os.path.join(PLAYBOOK_LOCATION_DIR, 'file_line_update.yml')
+
+    @property
+    def file_create_playbook(self) -> str:
+        """ Location of the 'file_create' playbook file """
+        return os.path.join(PLAYBOOK_LOCATION_DIR, 'file_create.yml')
+
+    @property
     def _success(self) -> int:
         """ Successful result of ansible task execution """
         return 0
@@ -140,3 +150,63 @@ class AnsibleExecutor:
         except AnsibleRunnerException as err:
             print(f"[{err}] — Could not find stdout in runner object")
         return output_lines
+
+    async def execute_file_line_update_task(self, file_path: str,
+                                            string_to_replace: str, new_string: str) -> None:
+        """
+        Updates line in the file
+
+        Args:
+            file_path: path of the target file
+            string_to_replace: string to be replaced
+            new_string: string to be inserted
+        """
+        print("\n[file_line_update] task start")
+
+        params_to_execute = {
+            'playbook': self.file_line_update_playbook,
+            'extravars': {
+                ansible_const.HOST_NAME: self._destination_host,
+                ansible_const.FILE_PATH: str(file_path),
+                ansible_const.STRING_TO_REPLACE: string_to_replace,
+                ansible_const.NEW_STRING: new_string
+            }
+        }
+        runner = await self._loop.run_in_executor(None, self._run_playbook, params_to_execute)
+
+        if runner.rc != self._success:
+            print(f"Unsuccessful ansible result code [rc={runner.rc}]")
+            fatal_message = self._get_fatal_output_message(runner)
+            raise AnsibleExecuteError(err_code=runner.rc,
+                                      playbook_file=self.file_line_update_playbook,
+                                      fatal_output=fatal_message)
+
+    async def execute_file_create_task(self, target_dir: str, file_name: str, file_content: str) -> None:
+        """
+        Creates new file with content in the target directory
+
+        Args:
+            target_dir: target directory absolute path
+            file_name: basename of creating file
+            file_content: content to be added for file
+        """
+        print("\n[file_create] task start")
+
+        params_to_execute = {
+            'playbook': self.file_create_playbook,
+            'extravars': {
+                ansible_const.HOST_NAME: self._destination_host,
+                ansible_const.TARGET_DIR: str(target_dir),
+                ansible_const.FILE_NAME: str(file_name),
+                ansible_const.FILE_CONTENT: file_content
+            }
+        }
+        runner = await self._loop.run_in_executor(None, self._run_playbook, params_to_execute)
+
+        if runner.rc != self._success:
+            print(f"Unsuccessful ansible result code [rc={runner.rc}]")
+            fatal_message = self._get_fatal_output_message(runner)
+            raise AnsibleExecuteError(err_code=runner.rc,
+                                      playbook_file=self.file_create_playbook,
+                                      fatal_output=fatal_message)
+

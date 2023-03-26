@@ -50,7 +50,7 @@ async def on_app_stop(app) -> None:
     Args:
         app: instance of the application
     """
-    pass
+    # todo: set log file path for 'service.log' as empty string
 
 
 def handle_exception(exc_type, exc_value, exc_traceback) -> None:
@@ -66,7 +66,7 @@ def create_app() -> web.Application:
     """
     Creates web application.
     """
-    logging.config.dictConfig(config=config.logging)  # fixme: resolve path — /var/log/kreoshine/service.log
+    logging.config.dictConfig(config=config.logging)
     sys.excepthook = handle_exception
 
     app = web.Application(client_max_size=config.app['client_max_size'])
