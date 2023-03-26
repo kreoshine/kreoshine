@@ -27,7 +27,7 @@ async def init_deploy():
     """ Entry point for deployment initialization """
     deploy_mode = config.deploy_mode
     if deploy_mode == DEVELOPMENT_MODE:
-        target_host = 'local'
+        target_host = 'localhost'  # fixme: here should be just local — unable to read 'hosts' file
     else:
         assert deploy_mode == PRODUCTION_MODE, \
             f"Only two modes of deployment is allowed: '{DEVELOPMENT_MODE}' and '{PRODUCTION_MODE}'"
