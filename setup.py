@@ -1,6 +1,7 @@
 import os
 
 from importlib.machinery import SourceFileLoader
+from typing import List
 
 from pkg_resources import parse_requirements
 from setuptools import setup, find_packages
@@ -12,12 +13,13 @@ module = SourceFileLoader(
 ).load_module(MODULE_NAME)
 
 
-def load_requirements(requirements_file: str) -> list:
+def load_requirements(requirements_files: List[str]) -> list:
     requirements = []
-    with open(requirements_file, 'r') as f:
-        for req in parse_requirements(f.read()):
-            extras = '[{}]'.format(','.join(req.extras)) if req.extras else ''
-            requirements.append('{}{}{}'.format(req.name, extras, req.specifier))
+    for file in requirements_files:
+        with open(file, 'r') as f:
+            for req in parse_requirements(f.read()):
+                extras = '[{}]'.format(','.join(req.extras)) if req.extras else ''
+                requirements.append('{}{}{}'.format(req.name, extras, req.specifier))
     return requirements
 
 
@@ -28,7 +30,7 @@ setup(
     author_email=module.__email__,
     license=module.__license__,
     description=module.__doc__,
-    # long_description=open('README.md').read(),  # todo: add long description
+    long_description=open('README.md').read(),
     url='https://github.com/kreoshine/backend',
     platforms='all',
     classifiers=[
@@ -36,8 +38,8 @@ setup(
     ],
     python_requires='>=3.11',
     packages=find_packages(exclude=['tests']),
-    install_requires=load_requirements('app/requirements.txt'),
-    extras_require={'deploy': load_requirements('deploy/requirements.txt')},
+    install_requires=load_requirements(['app/requirements.txt', 'settings/requirements.txt']),
+    extras_require={'deploy': load_requirements(['deploy/requirements.txt'])},
     entry_points={
         # todo: add entry point for deploy.__main__
         # todo: add entry point for app.__main__
