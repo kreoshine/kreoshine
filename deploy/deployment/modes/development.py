@@ -6,7 +6,7 @@ import os
 
 from deploy.deployment import DEV_SETTINGS_FILE
 from deploy.ansible import AnsibleExecutor, TEMPORARY_DIR
-from deploy.settings import DYNACONF_ROOT_PATH
+from settings import DYNACONF_ROOT_PATH
 
 
 async def process_dev_deploy(ansible: AnsibleExecutor) -> None:
