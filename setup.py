@@ -41,8 +41,8 @@ setup(
     install_requires=load_requirements(['app/requirements.txt', 'settings/requirements.txt']),
     extras_require={'deploy': load_requirements(['deploy/requirements.txt'])},
     entry_points={
-        # todo: add entry point for deploy.__main__
-        # todo: add entry point for app.__main__
+        # todo: add entry point for deploy.run
+        # todo: add entry point for app.main.run
     },
     include_package_data=True
 )
