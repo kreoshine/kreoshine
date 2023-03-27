@@ -48,9 +48,9 @@ source venv/bin/activate
 ```angular2html
 pip install -r pip-freeze.txt
 ```
-11. Run backend application 
+11. Run backend main application 
 ```angular2html
-python run.py
+python -m app.main.run
 ```
 
 12. Enjoy with develop:

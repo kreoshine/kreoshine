@@ -3,7 +3,7 @@ Service running module
 """
 from aiohttp import web
 
-from app import create_app
+from app.main import create_app
 from deploy.settings import config
 
 
