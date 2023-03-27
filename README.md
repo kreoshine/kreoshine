@@ -15,14 +15,14 @@ cd backend/
 
 If you choose venv here you go:
 ```angular2html
-python -m venv deploy/venv
+python -m venv venv
 ```
 ```angular2html
-source deploy/venv/bin/activate
+source venv/bin/activate
 ```
-6. Install deploy requirements (if you choose PIP, bellow command will help you)
+6. Install all requirements (if you choose PIP, bellow command will help you)
 ```angular2html
-pip install -r deploy/pip-freeze.txt
+pip install -r deploy/pip-freeze.txt -r app/pip-freeze.txt -r settings/pip-freeze.txt
 ```
 7. Initiate deployment (don't worry, it's gonna be in 'development' mode)
 ```angular2html
@@ -33,27 +33,12 @@ python -m deploy.run
 
 Keep a little calm for some more action:
 
-8. Deactivate previous environment
-```angular2html
-deactivate
-```
-9. Create and activate env for application
-```angular2html
-python -m venv venv
-```
-```angular2html
-source venv/bin/activate
-```
-10. Install app requirements (if you choose PIP, bellow command will help you)
-```angular2html
-pip install -r pip-freeze.txt
-```
-11. Run backend main application 
+8. Run main backend application 
 ```angular2html
 python -m app.main.run
 ```
 
-12. Enjoy with develop:
+9. Enjoy with develop:
 - Verify that the service.log file has been created in the 'tmp' directory located in the project dir. 
 (Probably it will appear in IDE after you stop service) 
 
