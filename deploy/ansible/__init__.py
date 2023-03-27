@@ -10,9 +10,9 @@ from typing import List
 import ansible_runner
 from ansible_runner import Runner, AnsibleRunnerException
 
-from deployment import TEMPORARY_DIR
-from ansible import ansible_const
-from ansible.exceptions import AnsibleExecuteError
+from deploy.ansible import ansible_const
+from deploy.ansible.exceptions import AnsibleExecuteError
+from deploy.deployment import TEMPORARY_DIR
 
 ANSIBLE_PRIVATE_DATA_DIR = os.path.join(TEMPORARY_DIR, 'ansible/')
 

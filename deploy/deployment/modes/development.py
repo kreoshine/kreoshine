@@ -4,9 +4,9 @@ Module is responsible for deployment in development mode.
 import asyncio
 import os
 
-from deployment import DEV_SETTINGS_FILE
-from ansible import AnsibleExecutor, TEMPORARY_DIR
-from settings import DYNACONF_ROOT_PATH
+from deploy.deployment import DEV_SETTINGS_FILE
+from deploy.ansible import AnsibleExecutor, TEMPORARY_DIR
+from deploy.settings import DYNACONF_ROOT_PATH
 
 
 async def process_dev_deploy(ansible: AnsibleExecutor) -> None:

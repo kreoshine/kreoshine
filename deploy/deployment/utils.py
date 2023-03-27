@@ -3,7 +3,7 @@ Different helpfully utils for deployment
 """
 from os import makedirs
 
-from ansible import ANSIBLE_PRIVATE_DATA_DIR
+from deploy.ansible import ANSIBLE_PRIVATE_DATA_DIR
 
 
 def create_ansible_dir_locally():
