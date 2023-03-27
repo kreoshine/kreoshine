@@ -1,0 +1,5 @@
+[development.deploy]
+mode='development'
+
+[production.deploy]
+mode='production'

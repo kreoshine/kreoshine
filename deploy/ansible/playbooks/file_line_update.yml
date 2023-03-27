@@ -1,0 +1,11 @@
+---
+- name: Updating file {{ file_path }} via line replacing
+  hosts: "{{ host_name }}"
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Replace the line {{ string_to_replace }} with a {{ new_string }}
+      ansible.builtin.lineinfile:
+        path: '{{ file_path }}'
+        search_string: '{{ string_to_replace }}'
+        line:  '{{ new_string }}'
