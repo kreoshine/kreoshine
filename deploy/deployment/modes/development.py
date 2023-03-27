@@ -16,13 +16,6 @@ async def process_dev_deploy(ansible: AnsibleExecutor) -> None:
     Args:
         ansible: instance of AnsibleExecutor class
     """
-    print(f"Create .gitignore file to ignore dev settings change: {os.path.join(DYNACONF_ROOT_PATH, '.gitignore')}")
-    gitignore_content = 'config/dev-settings.yaml'
-    gitignore_creation_task = asyncio.create_task(ansible.execute_file_create_task(target_dir=DYNACONF_ROOT_PATH,
-                                                                                   file_name='.gitignore',
-                                                                                   file_content=gitignore_content))
-    await gitignore_creation_task
-
     print(f"Set the file name for the log handler in dev settings file ({DEV_SETTINGS_FILE})")
     structural_gaps = ' ' * 8
     dynamic_service_log_path = os.path.join(TEMPORARY_DIR, 'service.log')
