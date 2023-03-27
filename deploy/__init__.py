@@ -6,11 +6,14 @@ import asyncio
 from deploy.ansible import AnsibleExecutor
 from deploy.deployment import DEVELOPMENT_MODE, PRODUCTION_MODE
 from deploy.deployment.modes.development import process_dev_deploy
+from deploy.deployment.utils import create_ansible_dir_locally
 from deploy.settings import config
 
 
 async def init_deploy():
     """ Entry point for deployment initialization """
+    create_ansible_dir_locally()
+
     deploy_mode = config.deploy_mode
 
     assert deploy_mode in (PRODUCTION_MODE, DEVELOPMENT_MODE), \

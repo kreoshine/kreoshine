@@ -26,7 +26,7 @@ pip install -r deploy/pip-freeze.txt
 ```
 7. Initiate deployment (don't worry, it's gonna be in 'development' mode)
 ```angular2html
-python deploy/run.py
+python -m deploy.run
 ```
 
 ***Steps below will be probably removed in the future for easily deployment!***
