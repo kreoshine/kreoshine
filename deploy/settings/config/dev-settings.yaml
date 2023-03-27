@@ -1,6 +1,9 @@
 development:
   deploy_mode: development
 
+  server:
+    ip: "127.0.0.1"
+
   app:
     host: "127.0.0.1"
     port: 8080

@@ -12,15 +12,14 @@ from deploy.settings import config
 async def init_deploy():
     """ Entry point for deployment initialization """
     deploy_mode = config.deploy_mode
-    if deploy_mode == DEVELOPMENT_MODE:
-        target_host = 'localhost'  # fixme: here should be just local — unable to read 'hosts' file
-    else:
-        assert deploy_mode == PRODUCTION_MODE, \
-            f"Only two modes of deployment is allowed: '{DEVELOPMENT_MODE}' and '{PRODUCTION_MODE}'"
-        target_host = 'remote'
-    print(f"Initiate '{deploy_mode}' mode of deployment")
+
+    assert deploy_mode in (PRODUCTION_MODE, DEVELOPMENT_MODE), \
+        f"Only two modes of deployment is allowed: '{DEVELOPMENT_MODE}' and '{PRODUCTION_MODE}'"
+    target_host = config.server.ip
+    print(f"Initiate '{deploy_mode}' mode of deployment on '{target_host}' host")
+
     ansible_executor = AnsibleExecutor(destination_host=target_host)
-    print(f"Successfully initiate instance of 'ansible executor' class for the '{target_host}' host")
+    print(f"Successfully initiate instance of 'ansible executor' class")
 
     echo_task = asyncio.create_task(ansible_executor.execute_echo_task())
     await echo_task
