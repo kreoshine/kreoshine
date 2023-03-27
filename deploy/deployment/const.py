@@ -1,5 +1,0 @@
-"""
-Constants used for deployment
-"""
-
-
