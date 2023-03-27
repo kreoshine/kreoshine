@@ -1,0 +1,17 @@
+---
+- name: Creating new file {{ file_name }}
+  hosts: "{{ host_name }}"
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Create file {{ file_name }} in {{ target_dir }} directory
+      ansible.builtin.file:
+        path: '{{ target_dir }}/{{ file_name }}'
+        state: touch
+        mode: '0755'
+
+    - name: Add content for file {{ file_name }}
+      ansible.builtin.lineinfile:
+        path: '{{ target_dir }}/{{ file_name }}'
+        insertbefore: "BOF"  # begin of the file
+        value:  '{{ file_content }}'

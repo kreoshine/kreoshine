@@ -1,0 +1,9 @@
+---
+- name: Communication with '{{ host_name }}' host
+  hosts: "{{ host_name }}"
+  gather_facts: true
+  become: false
+  tasks:
+    - name: Ansible ping with host {{ host_name }}
+      ansible.builtin.ping:
+        data: "success"
