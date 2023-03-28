@@ -1,7 +1,7 @@
 ---
 - name: Communication with '{{ host_name }}' host
   hosts: "{{ host_name }}"
-  gather_facts: true
+  gather_facts: '{{ need_gather_facts }}'
   become: false
   tasks:
     - name: Ansible ping with host {{ host_name }}

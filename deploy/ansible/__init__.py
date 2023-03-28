@@ -2,9 +2,9 @@
 Contains a class responsible for executing ansible tasks via ansible-runner
 """
 import asyncio
+import logging
 import os
 from pathlib import Path
-from pprint import pprint
 from typing import List
 
 import ansible_runner
@@ -12,9 +12,10 @@ from ansible_runner import Runner, AnsibleRunnerException
 
 from deploy.ansible import ansible_const
 from deploy.ansible.exceptions import AnsibleExecuteError
-from deploy.deployment import TEMPORARY_DIR
 
-ANSIBLE_PRIVATE_DATA_DIR = os.path.join(TEMPORARY_DIR, 'ansible/')
+logger = logging.getLogger('ansible_deploy')
+
+ANSIBLE_PRIVATE_DATA_DIR = os.path.join(str(Path(__file__).parent.parent.parent.resolve()), 'tmp/ansible/')
 
 PLAYBOOK_LOCATION_DIR = os.path.join(str(Path(__file__).parent), 'playbooks/')
 ANSIBLE_VERBOSITY = 1
@@ -28,6 +29,11 @@ class AnsibleExecutor:
     def __init__(self, destination_host: str):
         self._loop = asyncio.get_event_loop()
         self._destination_host = destination_host
+
+    @property
+    def target_host(self) -> str:
+        """ Target host for which ansible executor is running """
+        return self._destination_host
 
     @property
     def echo_playbook(self) -> str:
@@ -45,7 +51,7 @@ class AnsibleExecutor:
         return os.path.join(PLAYBOOK_LOCATION_DIR, 'file_create.yml')
 
     @property
-    def _success(self) -> int:
+    def success_rc(self) -> int:
         """ Successful result of ansible task execution """
         return 0
 
@@ -67,10 +73,9 @@ class AnsibleExecutor:
         """
         assert 'playbook' in params_to_execute, "Argument 'playbook' must be defined for runner execution"
         playbook_name = os.path.basename(params_to_execute['playbook'])
-        print(f"Initiate '{playbook_name}' playbook to execute")
+        logger.debug(f"Initiate '{playbook_name}' playbook to execute")
 
-        print("Collected next params for ansible runner:")
-        pprint(params_to_execute)
+        logger.debug(f"Collected next params for ansible runner: {params_to_execute}")
 
         # set ansible verbosity level
         params_to_execute['verbosity'] = self._ansible_verbosity
@@ -80,30 +85,33 @@ class AnsibleExecutor:
 
         # entry point of playbook execution
         runner = ansible_runner.run(**params_to_execute)
-        print(f"Stats of '{playbook_name}' playbook execution: {runner.stats}")
+        logger.debug(f"Stats of '{playbook_name}' playbook execution: {runner.stats}")
         return runner
 
-    async def execute_echo_task(self) -> None:
+    async def execute_echo_task(self, need_gather_facts: bool) -> None:
         """
         Executes ansible ping task
 
         Note: this is not an ICMP ping
 
+        Args:
+            need_gather_facts: boolean value reflecting the need to collect facts about the target node
         Raises:
             AnsibleExecuteError: if there was mistake during communication to the target host
         """
-        print("\n[echo] task start")
+        logger.debug("\n[echo] task start")
 
         params_to_execute = {
             'playbook': self.echo_playbook,
             'extravars': {
-                ansible_const.HOST_NAME: self._destination_host
+                ansible_const.HOST_NAME: self.target_host,
+                ansible_const.NEED_GATHER_FACTS: need_gather_facts,
             }
         }
         runner = await self._loop.run_in_executor(None, self._run_playbook, params_to_execute)
 
-        if runner.rc != self._success:
-            print(f"Unsuccessful ansible result code [rc={runner.rc}]")
+        if runner.rc != self.success_rc:
+            logger.error(f"Unsuccessful ansible result code [rc={runner.rc}]")
             fatal_message = self._get_fatal_output_message(runner)
             raise AnsibleExecuteError(err_code=runner.rc,
                                       playbook_file=self.echo_playbook,
@@ -121,7 +129,7 @@ class AnsibleExecutor:
         Returns:
             fatal output message
         """
-        fatal_output = self._find_error_lines(runner, start_with='fatal')
+        fatal_output = self._find_output_lines(runner, start_with='fatal')
         if len(fatal_output) == 1:
             return fatal_output[0]
         if len(fatal_output) == 0:
@@ -131,7 +139,7 @@ class AnsibleExecutor:
         return '\r\n'.join(fatal_output)
 
     @staticmethod
-    def _find_error_lines(runner: Runner, start_with: str = '') -> List[str]:
+    def _find_output_lines(runner: Runner, start_with: str = '') -> List[str]:
         """
         Searches in runner stdout the lines that start with specific word and logs searched lines in ERROR level
 
@@ -147,7 +155,7 @@ class AnsibleExecutor:
                 if line.startswith(start_with):
                     output_lines.append(line)
         except AnsibleRunnerException as err:
-            print(f"[{err}] — Could not find stdout in runner object")
+            logger.error(f"[{err}] — Could not find stdout in runner object")
         return output_lines
 
     async def execute_file_line_update_task(self, file_path: str,
@@ -160,12 +168,12 @@ class AnsibleExecutor:
             string_to_replace: string to be replaced
             new_string: string to be inserted
         """
-        print("\n[file_line_update] task start")
+        logger.debug("\n[file_line_update] task start")
 
         params_to_execute = {
             'playbook': self.file_line_update_playbook,
             'extravars': {
-                ansible_const.HOST_NAME: self._destination_host,
+                ansible_const.HOST_NAME: self.target_host,
                 ansible_const.FILE_PATH: str(file_path),
                 ansible_const.STRING_TO_REPLACE: string_to_replace,
                 ansible_const.NEW_STRING: new_string
@@ -173,8 +181,8 @@ class AnsibleExecutor:
         }
         runner = await self._loop.run_in_executor(None, self._run_playbook, params_to_execute)
 
-        if runner.rc != self._success:
-            print(f"Unsuccessful ansible result code [rc={runner.rc}]")
+        if runner.rc != self.success_rc:
+            logger.error(f"Unsuccessful ansible result code [rc={runner.rc}]")
             fatal_message = self._get_fatal_output_message(runner)
             raise AnsibleExecuteError(err_code=runner.rc,
                                       playbook_file=self.file_line_update_playbook,
@@ -189,12 +197,12 @@ class AnsibleExecutor:
             file_name: basename of creating file
             file_content: content to be added for file
         """
-        print("\n[file_create] task start")
+        logger.debug("\n[file_create] task start")
 
         params_to_execute = {
             'playbook': self.file_create_playbook,
             'extravars': {
-                ansible_const.HOST_NAME: self._destination_host,
+                ansible_const.HOST_NAME: self.target_host,
                 ansible_const.TARGET_DIR: str(target_dir),
                 ansible_const.FILE_NAME: str(file_name),
                 ansible_const.FILE_CONTENT: file_content
@@ -202,8 +210,8 @@ class AnsibleExecutor:
         }
         runner = await self._loop.run_in_executor(None, self._run_playbook, params_to_execute)
 
-        if runner.rc != self._success:
-            print(f"Unsuccessful ansible result code [rc={runner.rc}]")
+        if runner.rc != self.success_rc:
+            logger.error(f"Unsuccessful ansible result code [rc={runner.rc}]")
             fatal_message = self._get_fatal_output_message(runner)
             raise AnsibleExecuteError(err_code=runner.rc,
                                       playbook_file=self.file_create_playbook,

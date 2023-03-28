@@ -1,0 +1,36 @@
+[development.logging_main_service]
+version = 1
+
+[development.logging_main_service.formatters.default]
+format = "%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)s] %(message)s"
+
+[development.logging_main_service.loggers.main]
+handlers = ["service_file"]
+level = "DEBUG"
+
+[development.logging_main_service.handlers.service_file]
+class = "logging.handlers.RotatingFileHandler"
+filename = ""
+maxBytes = 10485760
+backupCount = 4
+formatter = "default"
+level = "DEBUG"
+
+
+[production.logging_main_service]
+version = 1
+
+[production.logging_main_service.formatters.default]
+format = "%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)s] %(message)s"
+
+[production.logging_main_service.loggers.main]
+handlers = ["service_file"]
+level = "DEBUG"
+
+[production.logging_main_service.handlers.service_file]
+class = "logging.handlers.RotatingFileHandler"
+filename = "/var/log/kreoshine/service.log"
+maxBytes = 10485760
+backupCount = 4
+formatter = "default"
+level = "DEBUG"
