@@ -1,2 +1,5 @@
-aiohttp[speedups]~=3.8
+aiohttp~=3.8.4
 aiohttp-cors~=0.7
+asyncio~=3.4.3
+dynaconf~=3.1.12
+setuptools~=67.6.0

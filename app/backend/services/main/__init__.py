@@ -9,8 +9,10 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 
 import asyncio
+import aiohttp_cors
 from aiohttp import web
 
+from app.backend.services.main.api import ExampleView
 from deploy import DEVELOPMENT_MODE, TEMPORARY_DIR
 from settings import config
 
@@ -52,6 +54,16 @@ def create_main_app() -> web.Application:
     configure_logging(logging_config=config.logging_main_service)
 
     app = web.Application(client_max_size=config.app.services.main['client_max_size'])
+
+    cors = aiohttp_cors.setup(app, defaults={
+        "*": aiohttp_cors.ResourceOptions(
+            allow_credentials=True,
+            expose_headers="*",
+            allow_headers="*",
+        )
+    })
+
+    cors.add(app.router.add_route('GET', '/', ExampleView))
 
     app.on_startup.append(on_app_start)
     app.on_shutdown.append(on_app_stop)
