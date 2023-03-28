@@ -126,7 +126,7 @@ class AnsibleExecutor:
         Returns:
             fatal output message
         """
-        fatal_output = self._find_error_lines(runner, start_with='fatal')
+        fatal_output = self._find_output_lines(runner, start_with='fatal')
         if len(fatal_output) == 1:
             return fatal_output[0]
         if len(fatal_output) == 0:
@@ -136,7 +136,7 @@ class AnsibleExecutor:
         return '\r\n'.join(fatal_output)
 
     @staticmethod
-    def _find_error_lines(runner: Runner, start_with: str = '') -> List[str]:
+    def _find_output_lines(runner: Runner, start_with: str = '') -> List[str]:
         """
         Searches in runner stdout the lines that start with specific word and logs searched lines in ERROR level
 
