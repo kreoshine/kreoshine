@@ -4,7 +4,7 @@ version = 1
 [development.logging.main_service.formatters.default]
 format = "%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)s] %(message)s"
 
-[development.logging.main_service.loggers.app]
+[development.logging.main_service.loggers.main]
 handlers = ["service_file"]
 level = "DEBUG"
 
@@ -23,7 +23,7 @@ version = 1
 [production.logging.main_service.formatters.default]
 format = "%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)s] %(message)s"
 
-[production.logging.main_service.loggers.app]
+[production.logging.main_service.loggers.main]
 handlers = ["service_file"]
 level = "DEBUG"
 

@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 import asyncio
 from aiohttp import web
 
-logger = logging.getLogger('app')
+logger = logging.getLogger('main')
 
 
 async def on_app_start(app):

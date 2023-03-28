@@ -13,7 +13,7 @@ from deploy import DEVELOPMENT_MODE
 from deploy.deployment import TEMPORARY_DIR
 from settings import config
 
-logger = logging.getLogger('app')
+logger = logging.getLogger('main')
 
 
 def handle_exception(exc_type, exc_value, exc_traceback) -> None:
