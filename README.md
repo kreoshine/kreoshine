@@ -20,10 +20,12 @@ git checkout develop
 ```angular2html
 python -m venv venv
 ```
-
-6. Run main backend application 
+6. Install all requirements (if you choose PIP, bellow command will help you)
+```angular2html
+pip install -r deploy/pip-freeze.txt -r app/pip-freeze.txt -r settings/pip-freeze.txt
+```
+7. Run main backend application 
 ```angular2html
 python -m app.backend.services.main.run
 ```
-
-7. Enjoy with develop
+8. Enjoy with develop
