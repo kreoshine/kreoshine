@@ -50,7 +50,7 @@ class AnsibleExecutor:
         return os.path.join(PLAYBOOK_LOCATION_DIR, 'file_create.yml')
 
     @property
-    def _success(self) -> int:
+    def success_rc(self) -> int:
         """ Successful result of ansible task execution """
         return 0
 
@@ -107,7 +107,7 @@ class AnsibleExecutor:
         }
         runner = await self._loop.run_in_executor(None, self._run_playbook, params_to_execute)
 
-        if runner.rc != self._success:
+        if runner.rc != self.success_rc:
             print(f"Unsuccessful ansible result code [rc={runner.rc}]")
             fatal_message = self._get_fatal_output_message(runner)
             raise AnsibleExecuteError(err_code=runner.rc,
@@ -178,7 +178,7 @@ class AnsibleExecutor:
         }
         runner = await self._loop.run_in_executor(None, self._run_playbook, params_to_execute)
 
-        if runner.rc != self._success:
+        if runner.rc != self.success_rc:
             print(f"Unsuccessful ansible result code [rc={runner.rc}]")
             fatal_message = self._get_fatal_output_message(runner)
             raise AnsibleExecuteError(err_code=runner.rc,
@@ -207,7 +207,7 @@ class AnsibleExecutor:
         }
         runner = await self._loop.run_in_executor(None, self._run_playbook, params_to_execute)
 
-        if runner.rc != self._success:
+        if runner.rc != self.success_rc:
             print(f"Unsuccessful ansible result code [rc={runner.rc}]")
             fatal_message = self._get_fatal_output_message(runner)
             raise AnsibleExecuteError(err_code=runner.rc,
