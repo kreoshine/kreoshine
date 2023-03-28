@@ -2,11 +2,14 @@
 Module is responsible for deployment in development mode.
 """
 import asyncio
+import logging
 import os
 from pathlib import Path
 
 from deploy.ansible import AnsibleExecutor
 from settings import DYNACONF_ROOT_PATH
+
+logger = logging.getLogger('ansible_deploy')
 
 TEMPORARY_DIR = os.path.join(str(Path(__file__).parent.parent.parent.parent.resolve()), 'tmp/')
 
@@ -20,7 +23,7 @@ async def process_dev_deploy(ansible: AnsibleExecutor) -> None:
     """
     echo_task = asyncio.create_task(ansible.execute_echo_task(need_gather_facts=False))
     await echo_task
-    print(f"Connection to {ansible.target_host} host available")
+    logger.info(f"Connection to {ansible.target_host} host available")
 
     main_service_log_config_file = os.path.join(DYNACONF_ROOT_PATH, 'config/logging/main_service.toml')
     print(f"Set the file name for the logging handler ({main_service_log_config_file})")

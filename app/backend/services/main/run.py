@@ -32,7 +32,7 @@ def configure_logging(service_config: dict, ):
 
 
 if __name__ == '__main__':
-    configure_logging(service_config=dict(config.logging.main_service))
+    configure_logging(service_config=dict(config.logging_main_service))
 
     main_service_config = dict(config.app.services.main)
     main_service = create_app(service_config=main_service_config)
