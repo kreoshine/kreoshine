@@ -26,7 +26,7 @@ def configure_deploy_log_file_locally():
     Configures deploy logging file locally
     """
     create_ansible_dir_locally()
-    ansible_log_config = dict(config.logging_ansible_deploy)
+    ansible_log_config = config.logging_ansible_deploy
     ansible_log_config['handlers']['service_file']['filename'] = os.path.join(TEMPORARY_DIR, 'ansible-deploy.log')
     logging.config.dictConfig(config=ansible_log_config)
 
