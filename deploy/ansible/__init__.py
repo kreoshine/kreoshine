@@ -30,6 +30,11 @@ class AnsibleExecutor:
         self._destination_host = destination_host
 
     @property
+    def target_host(self) -> str:
+        """ Target host for which ansible executor is running """
+        return self._destination_host
+
+    @property
     def echo_playbook(self) -> str:
         """ Location of 'echo' playbook file """
         return os.path.join(PLAYBOOK_LOCATION_DIR, 'echo.yml')
@@ -97,7 +102,7 @@ class AnsibleExecutor:
         params_to_execute = {
             'playbook': self.echo_playbook,
             'extravars': {
-                ansible_const.HOST_NAME: self._destination_host
+                ansible_const.HOST_NAME: self.target_host
             }
         }
         runner = await self._loop.run_in_executor(None, self._run_playbook, params_to_execute)
@@ -165,7 +170,7 @@ class AnsibleExecutor:
         params_to_execute = {
             'playbook': self.file_line_update_playbook,
             'extravars': {
-                ansible_const.HOST_NAME: self._destination_host,
+                ansible_const.HOST_NAME: self.target_host,
                 ansible_const.FILE_PATH: str(file_path),
                 ansible_const.STRING_TO_REPLACE: string_to_replace,
                 ansible_const.NEW_STRING: new_string
@@ -194,7 +199,7 @@ class AnsibleExecutor:
         params_to_execute = {
             'playbook': self.file_create_playbook,
             'extravars': {
-                ansible_const.HOST_NAME: self._destination_host,
+                ansible_const.HOST_NAME: self.target_host,
                 ansible_const.TARGET_DIR: str(target_dir),
                 ansible_const.FILE_NAME: str(file_name),
                 ansible_const.FILE_CONTENT: file_content

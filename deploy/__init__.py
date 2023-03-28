@@ -1,8 +1,6 @@
 """
 Package for deployment
 """
-import asyncio
-
 from deploy.ansible import AnsibleExecutor
 from deploy.deployment import DEVELOPMENT_MODE, PRODUCTION_MODE
 from deploy.deployment.modes.development import process_dev_deploy
@@ -23,10 +21,6 @@ async def init_deploy():
 
     ansible_executor = AnsibleExecutor(destination_host=target_host)
     print(f"Successfully initiate instance of 'ansible executor' class")
-
-    echo_task = asyncio.create_task(ansible_executor.execute_echo_task())
-    await echo_task
-    print(f"Connection to {target_host} host available")
 
     if deploy_mode == DEVELOPMENT_MODE:
         await process_dev_deploy(ansible=ansible_executor)

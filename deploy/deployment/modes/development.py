@@ -15,6 +15,11 @@ async def process_dev_deploy(ansible: AnsibleExecutor) -> None:
     Args:
         ansible: instance of AnsibleExecutor class
     """
+
+    echo_task = asyncio.create_task(ansible.execute_echo_task())
+    await echo_task
+    print(f"Connection to {ansible.target_host} host available")
+
     dev_config_file = os.path.join(DYNACONF_ROOT_PATH, 'config/log/dev_config.toml')
     print(f"Set the file name for the log handler ({dev_config_file})")
     dynamic_service_log_path = os.path.join(TEMPORARY_DIR, 'service.log')
