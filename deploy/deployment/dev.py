@@ -18,8 +18,7 @@ async def process_dev_deploy(ansible: AnsibleExecutor) -> None:
     Args:
         ansible: instance of AnsibleExecutor class
     """
-
-    echo_task = asyncio.create_task(ansible.execute_echo_task())
+    echo_task = asyncio.create_task(ansible.execute_echo_task(need_gather_facts=False))
     await echo_task
     print(f"Connection to {ansible.target_host} host available")
 

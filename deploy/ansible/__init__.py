@@ -87,12 +87,14 @@ class AnsibleExecutor:
         print(f"Stats of '{playbook_name}' playbook execution: {runner.stats}")
         return runner
 
-    async def execute_echo_task(self) -> None:
+    async def execute_echo_task(self, need_gather_facts: bool) -> None:
         """
         Executes ansible ping task
 
         Note: this is not an ICMP ping
 
+        Args:
+            need_gather_facts: boolean value reflecting the need to collect facts about the target node
         Raises:
             AnsibleExecuteError: if there was mistake during communication to the target host
         """
@@ -101,7 +103,8 @@ class AnsibleExecutor:
         params_to_execute = {
             'playbook': self.echo_playbook,
             'extravars': {
-                ansible_const.HOST_NAME: self.target_host
+                ansible_const.HOST_NAME: self.target_host,
+                ansible_const.NEED_GATHER_FACTS: need_gather_facts,
             }
         }
         runner = await self._loop.run_in_executor(None, self._run_playbook, params_to_execute)
