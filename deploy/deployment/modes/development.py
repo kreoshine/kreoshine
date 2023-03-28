@@ -20,7 +20,7 @@ async def process_dev_deploy(ansible: AnsibleExecutor) -> None:
     dynamic_service_log_path = os.path.join(TEMPORARY_DIR, 'service.log')
     dev_settings_update_task = asyncio.create_task(
         ansible.execute_file_line_update_task(file_path=dev_config_file,
-                                              string_to_replace='filename = ""',
+                                              string_to_replace='filename',
                                               new_string=f'filename = "{dynamic_service_log_path}"'))
 
     print(f"Define 'dev' environment for dynaconf: {os.path.join(DYNACONF_ROOT_PATH, '.env')}")

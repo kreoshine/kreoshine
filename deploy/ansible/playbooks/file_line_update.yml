@@ -7,5 +7,7 @@
     - name: Replace the line {{ string_to_replace }} with a {{ new_string }}
       ansible.builtin.lineinfile:
         path: '{{ file_path }}'
-        search_string: '{{ string_to_replace }}'
+        regexp: '^{{ string_to_replace }}.*'
         line:  '{{ new_string }}'
+        firstmatch: true
+
