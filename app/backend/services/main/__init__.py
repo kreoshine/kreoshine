@@ -48,14 +48,14 @@ def handle_exception(exc_type, exc_value, exc_traceback) -> None:
     logger.critical("Uncaught exception!", exc_info=(exc_type, exc_value, exc_traceback))
 
 
-def create_app(service_config: dict) -> web.Application:
+def create_app(service_config: dict, log_config: dict) -> web.Application:
     """
     Creates web application
 
     Args:
         service_config: configuration for service
     """
-    logging.config.dictConfig(config=config.logging)
+    logging.config.dictConfig(config=log_config)
     sys.excepthook = handle_exception
 
     app = web.Application(client_max_size=service_config['client_max_size'])
