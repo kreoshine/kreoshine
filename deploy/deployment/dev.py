@@ -3,9 +3,12 @@ Module is responsible for deployment in development mode.
 """
 import asyncio
 import os
+from pathlib import Path
 
-from deploy.ansible import AnsibleExecutor, TEMPORARY_DIR
+from deploy.ansible import AnsibleExecutor
 from settings import DYNACONF_ROOT_PATH
+
+TEMPORARY_DIR = os.path.join(str(Path(__file__).parent.parent.parent.parent.resolve()), 'tmp/')
 
 
 async def process_dev_deploy(ansible: AnsibleExecutor) -> None:

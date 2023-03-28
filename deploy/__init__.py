@@ -1,11 +1,20 @@
 """
-Package for deployment
+Package is responsible for deployment in different modes.
 """
+import os
+from pathlib import Path
+
 from deploy.ansible import AnsibleExecutor
-from deploy.deployment import DEVELOPMENT_MODE, PRODUCTION_MODE
-from deploy.deployment.modes.development import process_dev_deploy
+from deploy.deployment.dev import process_dev_deploy
 from deploy.deployment.utils import create_ansible_dir_locally
 from settings import config
+
+PROJECT_DIR = str(Path(__file__).parent.parent.resolve())
+TEMPORARY_DIR = os.path.join(PROJECT_DIR, 'tmp/')
+
+# allowed deployment modes
+DEVELOPMENT_MODE = 'development'
+PRODUCTION_MODE = 'production'
 
 
 async def init_deploy():

@@ -4,7 +4,7 @@ Script for compatibility ansible-runner with Windows
 import os.path
 from platform import platform
 
-from deploy.deployment import PROJECT_DIR
+from deploy import PROJECT_DIR
 
 
 def remove_lines_in_files(target_file: str, deletion_indicator_word: str) -> None:

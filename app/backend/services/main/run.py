@@ -9,8 +9,7 @@ import sys
 from aiohttp import web
 
 from app.backend.services.main import create_app
-from deploy import DEVELOPMENT_MODE
-from deploy.deployment import TEMPORARY_DIR
+from deploy import DEVELOPMENT_MODE, TEMPORARY_DIR
 from settings import config
 
 logger = logging.getLogger('main')

@@ -12,9 +12,8 @@ from ansible_runner import Runner, AnsibleRunnerException
 
 from deploy.ansible import ansible_const
 from deploy.ansible.exceptions import AnsibleExecuteError
-from deploy.deployment import TEMPORARY_DIR
 
-ANSIBLE_PRIVATE_DATA_DIR = os.path.join(TEMPORARY_DIR, 'ansible/')
+ANSIBLE_PRIVATE_DATA_DIR = os.path.join(str(Path(__file__).parent.parent.parent.resolve()), 'tmp/ansible/')
 
 PLAYBOOK_LOCATION_DIR = os.path.join(str(Path(__file__).parent), 'playbooks/')
 ANSIBLE_VERBOSITY = 1
