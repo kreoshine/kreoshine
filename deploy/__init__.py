@@ -4,11 +4,11 @@ Package for deployment
 import logging.config
 import logging
 import os
+from os import makedirs
 from pathlib import Path
 
-from ansible import AnsibleExecutor
-from deploy.deployment.dev import process_dev_deploy
-from deploy.deployment.utils import create_ansible_dir_locally
+from ansible import AnsibleExecutor, ANSIBLE_PRIVATE_DATA_DIR
+from deploy.dev import process_dev_deploy
 from settings import config
 
 logger = logging.getLogger('ansible_deploy')
@@ -19,6 +19,16 @@ TEMPORARY_DIR = os.path.join(PROJECT_DIR, 'tmp/')
 # allowed deployment modes
 DEVELOPMENT_MODE = 'development'
 PRODUCTION_MODE = 'production'
+
+
+def create_ansible_dir_locally():
+    """ Creates directories in project dir (i.e. tmp/ansible) """
+    try:
+        makedirs(ANSIBLE_PRIVATE_DATA_DIR)
+        print(f"Directory {ANSIBLE_PRIVATE_DATA_DIR} successfully created")
+    except FileExistsError:
+        print(f"Directory {ANSIBLE_PRIVATE_DATA_DIR} already exist")
+        pass
 
 
 def configure_deploy_log_file_locally():
