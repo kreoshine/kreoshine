@@ -22,7 +22,7 @@ python -m venv venv
 ```
 6. Install all requirements (if you choose PIP, bellow command will help you)
 ```angular2html
-pip install -r deploy/pip-freeze.txt -r app/pip-freeze.txt -r settings/pip-freeze.txt
+pip install -r deploy/pip-freeze.txt -r app/pip-freeze.txt
 ```
 7. Run main backend application 
 ```angular2html

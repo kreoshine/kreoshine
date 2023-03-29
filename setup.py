@@ -38,7 +38,7 @@ setup(
     ],
     python_requires='>=3.11',
     packages=find_packages(exclude=['tests']),
-    install_requires=load_requirements(['app/requirements.txt', 'settings/requirements.txt']),
+    install_requires=load_requirements(['app/requirements.txt']),
     extras_require={'deploy': load_requirements(['deploy/requirements.txt'])},
     entry_points={
         # todo: add entry point for deploy.run
