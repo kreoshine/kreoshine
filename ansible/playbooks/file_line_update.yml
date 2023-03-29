@@ -10,4 +10,3 @@
         regexp: '^{{ string_to_replace }}.*'
         line:  '{{ new_string }}'
         firstmatch: true
-

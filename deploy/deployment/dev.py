@@ -6,7 +6,7 @@ import logging
 import os
 from pathlib import Path
 
-from deploy.ansible import AnsibleExecutor
+from ansible import AnsibleExecutor
 from settings import DYNACONF_ROOT_PATH
 
 logger = logging.getLogger('ansible_deploy')

@@ -6,7 +6,7 @@ import logging
 import os
 from pathlib import Path
 
-from deploy.ansible import AnsibleExecutor
+from ansible import AnsibleExecutor
 from deploy.deployment.dev import process_dev_deploy
 from deploy.deployment.utils import create_ansible_dir_locally
 from settings import config
