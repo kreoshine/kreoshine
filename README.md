@@ -20,12 +20,12 @@ git checkout develop
 ```angular2html
 python -m venv venv
 ```
-6. Install all requirements (if you choose PIP, bellow command will help you)
+6. Install deploy requirements (if you choose PIP, bellow command will help you)
 ```angular2html
-pip install -r deploy/pip-freeze.txt -r app/pip-freeze.txt
+pip install -r deploy/pip-freeze.txt
 ```
-7. Run main backend application 
-```angular2html
-python -m app.backend.services.main.run
-```
-8. Enjoy with develop
+
+7. **TODO**: make local deploy via Docker for index service (in Dockerfile or playbook, or else) :
+   1. install requirements for service
+   2. need copy of settings for service
+   3. make build with backend/app/services/index

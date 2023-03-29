@@ -4,13 +4,13 @@ access_log_format = "%a %{X-Real-IP}i %t \"%r\" %s %b \"%{User-Agent}i\" %D"
 [production.app]
 access_log_format = "%a %{X-Real-IP}i %t \"%r\" %s %b \"%{User-Agent}i\" %D"
 
-[development.app.services.main]
+[development.app.services.index]
 host = "127.0.0.1"
 port = 8080
 thread_pool_size = 5
 client_max_size = "52428800"
 
-[production.app.services.main]
+[production.app.services.index]
 host = "127.0.0.1"
 port = 8080
 thread_pool_size = 5

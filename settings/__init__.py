@@ -14,7 +14,7 @@ config = LazySettings(
         'config/deploy/config.toml',
         'config/server/config.toml',
         'config/app/config.toml',
-        'config/logging/main_service.toml',
+        'config/logging/index_service.toml',
         'config/logging/ansible_deploy.toml',
     ],
     ENV_SWITCHER_FOR_DYNACONF='KREOSHINE_ENV',  # `export KREOSHINE_ENV=target_environment` in .env file

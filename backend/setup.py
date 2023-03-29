@@ -30,19 +30,18 @@ setup(
     author_email=module.__email__,
     license=module.__license__,
     description=module.__doc__,
-    long_description=open('README.md').read(),
-    url='https://github.com/kreoshine/backend',
+    url='https://github.com/kreoshine/kreoshine',
     platforms='all',
     classifiers=[
         'Natural Language :: Russian',
     ],
     python_requires='>=3.11',
     packages=find_packages(exclude=['tests']),
-    install_requires=load_requirements(['app/requirements.txt']),
-    extras_require={'deploy': load_requirements(['deploy/requirements.txt'])},
+    install_requires=load_requirements(['requirements.txt']),
     entry_points={
-        # todo: add entry point for deploy.run
-        # todo: add entry point for app.backend.service.main.run
+        'console_scripts': [
+            'index = index.run:main',
+        ],
     },
     include_package_data=True
 )

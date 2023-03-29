@@ -9,12 +9,12 @@ from aiohttp.web_response import Response
 from aiohttp.web_urldispatcher import View
 from aiohttp_cors import CorsViewMixin
 
-from app.backend.services.main.api import const
+from api import const
 
 logger = logging.getLogger('main_service')
 
 
-class ExampleView(View, CorsViewMixin):
+class IndexView(View, CorsViewMixin):
     """ Example view """
 
     async def get(self) -> Response:
@@ -25,7 +25,7 @@ class ExampleView(View, CorsViewMixin):
         logger.debug(f"Got request: {request}")
         response_dict = {
             const.STATUS_CODE: 200,
-            const.BODY: {}  # todo: fill body and select status code if needed
+            const.BODY: {}
         }
         logger.debug(f"Send response: {response_dict}")
         return web.json_response(response_dict)
