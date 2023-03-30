@@ -3,7 +3,7 @@ Service running module
 """
 from aiohttp import web
 
-from app import create_index_service
+from __init__ import create_index_service
 from settings import config
 
 
