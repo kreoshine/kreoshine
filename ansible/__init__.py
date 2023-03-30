@@ -15,7 +15,7 @@ from ansible.exceptions import AnsibleExecuteError
 
 logger = logging.getLogger('ansible_deploy')
 
-ANSIBLE_PRIVATE_DATA_DIR = os.path.join(str(Path(__file__).parent.parent.parent.resolve()), 'tmp/ansible/')
+ANSIBLE_PRIVATE_DATA_DIR = os.path.join(str(Path(__file__).parent.parent.resolve()), 'tmp/ansible/')
 
 PLAYBOOK_LOCATION_DIR = os.path.join(str(Path(__file__).parent), 'playbooks/')
 ANSIBLE_VERBOSITY = 1
