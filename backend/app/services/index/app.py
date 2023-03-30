@@ -18,20 +18,20 @@ from settings import config
 logger = logging.getLogger('index_service')
 
 
-async def on_app_start(app):
-    """ Service initialization on application start """
+async def on_service_start(app):
+    """ Initialization of 'index' service """
     service_config = config.app.services.index
     asyncio.get_event_loop().set_default_executor(ThreadPoolExecutor(max_workers=service_config['thread_pool_size']))
 
     logger.info("Service 'index' successfully started")
 
 
-async def on_app_stop(app) -> None:
-    """ Stops tasks on the application destroy """
+async def on_service_stop(app) -> None:
+    """ Stops tasks when the service is destroyed """
 
 
 def handle_exception(exc_type, exc_value, exc_traceback) -> None:
-    """ Handler for uncaught exceptions for 'main_service' logger """
+    """ Handler for uncaught exceptions for logger of 'index' service """
     if issubclass(exc_type, KeyboardInterrupt):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
         return
@@ -39,7 +39,7 @@ def handle_exception(exc_type, exc_value, exc_traceback) -> None:
 
 
 def configure_logging(logging_config: dict) -> None:
-    """ Configures logging for 'main_service' service """
+    """ Configures logging for 'index' service """
     if config.deploy.mode == 'development':
         project_root_dir = Path(os.path.abspath(__file__)).parent.parent.parent.parent.parent.resolve()
         logging_config['handlers']['service_file']['filename'] = os.path.join(project_root_dir, 'tmp/index-service.log')
@@ -51,9 +51,9 @@ def create_index_service() -> web.Application:
     """ Creates instance of web application for 'index' service """
     configure_logging(logging_config=config.logging_index_service)
 
-    app = web.Application(client_max_size=config.app.services.index['client_max_size'])
+    service = web.Application(client_max_size=config.app.services.index['client_max_size'])
 
-    cors = aiohttp_cors.setup(app, defaults={
+    cors = aiohttp_cors.setup(service, defaults={
         "*": aiohttp_cors.ResourceOptions(
             allow_credentials=True,
             expose_headers="*",
@@ -61,10 +61,10 @@ def create_index_service() -> web.Application:
         )
     })
 
-    cors.add(app.router.add_route('GET', '/index', IndexView))
+    cors.add(service.router.add_route('GET', '/index', IndexView))
 
-    app.on_startup.append(on_app_start)
-    app.on_shutdown.append(on_app_stop)
+    service.on_startup.append(on_service_start)
+    service.on_shutdown.append(on_service_stop)
 
-    logger.debug("Instance of application for 'index' service successfully created")
-    return app
+    logger.debug("Instance of web-application for 'index' service successfully created")
+    return service
