@@ -90,3 +90,6 @@ dmypy.json
 
 # temporary files
 /tmp
+
+# log-files
+*.log
