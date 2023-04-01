@@ -1,6 +1,7 @@
 """
 Package for deployment
 """
+import asyncio
 import logging.config
 import logging
 import os
@@ -8,8 +9,7 @@ from os import makedirs
 from pathlib import Path
 
 from ansible import AnsibleExecutor, ANSIBLE_PRIVATE_DATA_DIR
-from deploy.dev import process_dev_deploy
-from settings import config
+from settings import config, DYNACONF_ROOT_PATH
 
 logger = logging.getLogger('ansible_deploy')
 
@@ -52,8 +52,16 @@ async def init_deploy():
     target_host = config.server.ip
     logger.info(f"Initiate '{deploy_mode}' mode of deployment on '{target_host}' host")
 
-    ansible_executor = AnsibleExecutor(destination_host=target_host)
+    ansible = AnsibleExecutor(destination_host=target_host)
     logger.debug(f"Successfully initiate instance of 'ansible executor' class")
 
-    if deploy_mode == DEVELOPMENT_MODE:
-        await process_dev_deploy(ansible=ansible_executor)
+    echo_task = asyncio.create_task(ansible.execute_echo_task(need_gather_facts=False))
+    await echo_task
+    logger.info(f"Connection to {ansible.target_host} host available")
+
+    logger.debug(f"Define 'dev' environment for dynaconf: {os.path.join(DYNACONF_ROOT_PATH, '.env')}")
+    dote_env_content = 'export KREOSHINE_ENV=DEVELOPMENT'
+    env_creation_task = asyncio.create_task(ansible.execute_file_create_task(target_dir=DYNACONF_ROOT_PATH,
+                                                                             file_name='.env',
+                                                                             file_content=dote_env_content))
+    await env_creation_task
