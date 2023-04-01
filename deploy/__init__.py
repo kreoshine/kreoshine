@@ -9,7 +9,7 @@ from os import makedirs
 from pathlib import Path
 
 from ansible import AnsibleExecutor, ANSIBLE_PRIVATE_DATA_DIR
-from settings import config, DYNACONF_ROOT_PATH
+from settings import config, SETTINGS_DIR
 
 logger = logging.getLogger('ansible_deploy')
 
@@ -59,9 +59,9 @@ async def init_deploy():
     await echo_task
     logger.info(f"Connection to {ansible.target_host} host available")
 
-    logger.debug(f"Define 'dev' environment for dynaconf: {os.path.join(DYNACONF_ROOT_PATH, '.env')}")
+    logger.debug(f"Define 'dev' environment for dynaconf: {os.path.join(SETTINGS_DIR, '.env')}")
     dote_env_content = 'export KREOSHINE_ENV=DEVELOPMENT'
-    env_creation_task = asyncio.create_task(ansible.execute_file_create_task(target_dir=DYNACONF_ROOT_PATH,
+    env_creation_task = asyncio.create_task(ansible.execute_file_create_task(target_dir=SETTINGS_DIR,
                                                                              file_name='.env',
                                                                              file_content=dote_env_content))
     await env_creation_task
