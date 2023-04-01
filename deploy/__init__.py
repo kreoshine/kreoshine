@@ -8,7 +8,7 @@ import os
 from os import makedirs
 from pathlib import Path
 
-from ansible import AnsibleExecutor, ANSIBLE_PRIVATE_DATA_DIR
+from ansible import AnsibleExecutor
 from settings import config, SETTINGS_DIR
 
 logger = logging.getLogger('ansible_deploy')
@@ -21,29 +21,32 @@ DEVELOPMENT_MODE = 'development'
 PRODUCTION_MODE = 'production'
 
 
-def create_ansible_dir_locally():
-    """ Creates directories in project dir (i.e. tmp/ansible) """
+def create_directory(dir_path: str):
+    """ Creates a directory on the path if it is not created """
     try:
-        makedirs(ANSIBLE_PRIVATE_DATA_DIR)
-        print(f"Directory {ANSIBLE_PRIVATE_DATA_DIR} successfully created")
+        makedirs(dir_path)
+        print(f"Directory {dir_path} successfully created")
     except FileExistsError:
-        print(f"Directory {ANSIBLE_PRIVATE_DATA_DIR} already exist")
+        print(f"Directory {dir_path} already exist")
         pass
 
 
-def configure_deploy_log_file_locally():
+def configure_deploy_logging_locally(logger_file: str):
     """
     Configures deploy logging file locally
+
+    Args:
+        logger_file: path of the logger file (expected that directory to this file is already exist)
     """
-    create_ansible_dir_locally()
-    ansible_log_config = config.logging_ansible_deploy
-    ansible_log_config['handlers']['service_file']['filename'] = os.path.join(TEMPORARY_DIR, 'ansible-deploy.log')
-    logging.config.dictConfig(config=ansible_log_config)
+    deploy_log_config = config.logging_ansible_deploy
+    deploy_log_config['handlers']['service_file']['filename'] = logger_file
+    logging.config.dictConfig(config=deploy_log_config)
 
 
 async def init_deploy():
     """ Entry point for deployment initialization """
-    configure_deploy_log_file_locally()
+    create_directory(dir_path=TEMPORARY_DIR)
+    configure_deploy_logging_locally(logger_file=os.path.join(TEMPORARY_DIR, 'ansible-deploy.log'))
 
     deploy_mode = config.deploy.mode
     assert deploy_mode in (PRODUCTION_MODE, DEVELOPMENT_MODE), \
@@ -52,7 +55,9 @@ async def init_deploy():
     target_host = config.server.ip
     logger.info(f"Initiate '{deploy_mode}' mode of deployment on '{target_host}' host")
 
-    ansible = AnsibleExecutor(destination_host=target_host)
+    ansible = AnsibleExecutor(destination_host=target_host,
+                              private_data_dir=TEMPORARY_DIR,
+                              verbosity=config.ansible.verbosity)
     logger.debug(f"Successfully initiate instance of 'ansible executor' class")
 
     echo_task = asyncio.create_task(ansible.execute_echo_task(need_gather_facts=False))
