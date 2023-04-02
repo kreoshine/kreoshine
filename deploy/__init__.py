@@ -56,7 +56,7 @@ async def perform_deployment(deploy_mode: str, local_output_dir: str):
     await echo_task
     logger.info(f"Connection to {ansible.target_host} host available")
 
-    logger.debug(f"Define 'dev' environment for dynaconf: {os.path.join(SETTINGS_DIR, '.env')}")
+    logger.debug(f"Define '{deploy_mode}' environment for dynaconf: {os.path.join(SETTINGS_DIR, '.env')}")
     dote_env_content = f'export KREOSHINE_ENV={deploy_mode.upper()}'
     env_creation_task = asyncio.create_task(ansible.execute_file_create_task(target_dir=SETTINGS_DIR,
                                                                              file_name='.env',
