@@ -24,7 +24,8 @@ def configure_deploy_logging_locally(logger_file: str):
         logger_file: path of the logger file (expected that directory to this file is already exist)
     """
     deploy_log_config = config.logging_ansible_deploy
-    deploy_log_config['handlers']['service_file']['filename'] = logger_file
+    if not deploy_log_config['handlers']['service_file']['filename']:
+        deploy_log_config['handlers']['service_file']['filename'] = logger_file
     logging.config.dictConfig(config=deploy_log_config)
 
 
