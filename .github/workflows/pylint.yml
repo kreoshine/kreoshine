@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.11"]
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -27,4 +27,4 @@ jobs:
         if [ -f deploy/pip-freeze.txt ]; then pip install -r deploy/pip-freeze.txt; fi
     - name: Analysing the code with pylint
       run: |
-        pylint -d=fixme,E1120,no-value-for-parameter --ignore-paths=^db/migrations/.*$ $(git ls-files '*.py')
+        pylint --max-line-length=120 $(git ls-files '*.py')
