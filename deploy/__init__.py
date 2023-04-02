@@ -5,8 +5,6 @@ import asyncio
 import logging.config
 import logging
 import os
-from os import makedirs
-from pathlib import Path
 
 from ansible import AnsibleExecutor
 from settings import config, SETTINGS_DIR
@@ -16,16 +14,6 @@ logger = logging.getLogger('ansible_deploy')
 # allowed deployment modes
 DEVELOPMENT_MODE = 'development'
 PRODUCTION_MODE = 'production'
-
-
-def create_directory(dir_path: str):
-    """ Creates a directory on the path if it is not created """
-    try:
-        makedirs(dir_path)
-        print(f"Directory {dir_path} successfully created")
-    except FileExistsError:
-        print(f"Directory {dir_path} already exist")
-        pass
 
 
 def configure_deploy_logging_locally(logger_file: str):
@@ -40,13 +28,18 @@ def configure_deploy_logging_locally(logger_file: str):
     logging.config.dictConfig(config=deploy_log_config)
 
 
-async def init_deploy():
-    """ Entry point for deployment initialization """
-    local_tmp_dir = os.path.join(str(Path(__file__).parent.parent.resolve()), 'tmp/')
-    create_directory(dir_path=local_tmp_dir)
-    configure_deploy_logging_locally(logger_file=os.path.join(local_tmp_dir, 'ansible-deploy.log'))
+async def perform_deployment(deploy_mode: str, local_output_dir: str):
+    """
+    Deployment entry point
 
-    deploy_mode = config.deploy.mode
+    Args:
+        deploy_mode: mode of deployment
+        local_output_dir: path to an existing local directory to be used:
+                              - for deployment log files
+                              - as ansible-runner's private data directory
+    """
+    configure_deploy_logging_locally(logger_file=os.path.join(local_output_dir, 'ansible-deploy.log'))
+
     assert deploy_mode in (PRODUCTION_MODE, DEVELOPMENT_MODE), \
         f"Only two modes of deployment is allowed: '{DEVELOPMENT_MODE}' and '{PRODUCTION_MODE}'"
 
@@ -54,7 +47,7 @@ async def init_deploy():
     logger.info(f"Initiate '{deploy_mode}' mode of deployment on '{target_host}' host")
 
     ansible = AnsibleExecutor(destination_host=target_host,
-                              private_data_dir=local_tmp_dir,
+                              private_data_dir=local_output_dir,
                               verbosity=config.ansible.verbosity)
     logger.debug(f"Successfully initiate instance of 'ansible executor' class")
 
