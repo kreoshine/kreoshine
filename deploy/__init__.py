@@ -56,6 +56,18 @@ async def prepare_project_for_deployment(ansible: AnsibleExecutor):
     await env_creation_task
 
 
+async def install_docker(ansible: AnsibleExecutor):
+    # todo: install docker
+    pass
+
+
+async def configure_nginx(ansible: AnsibleExecutor) -> None:
+    """ Configures nginx
+    Args:
+        ansible: instance of ansible executor
+    """
+
+
 async def perform_deployment(deploy_mode: str, local_output_dir: str):
     """
     Deployment entry point
@@ -85,3 +97,9 @@ async def perform_deployment(deploy_mode: str, local_output_dir: str):
 
     logger.debug("Preparing the project for deployment")
     await prepare_project_for_deployment(ansible=ansible_executor)
+
+    logger.debug("Docker installation")
+    await install_docker(ansible=ansible_executor)
+
+    logger.debug("Configure Nginx as a web-server")
+    await configure_nginx(ansible=ansible_executor)
