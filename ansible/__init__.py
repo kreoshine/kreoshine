@@ -5,7 +5,7 @@ import asyncio
 import logging
 import os
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import ansible_runner
 from ansible_runner import Runner, AnsibleRunnerException
@@ -82,6 +82,31 @@ class AnsibleExecutor:
         logger.debug(f"Stats of '{playbook_name}' playbook execution: {runner.stats}")
         return runner
 
+    def _run_ad_hoc_command(self, params_to_execute: dict) -> Runner:
+        """
+        (Synchronously!)
+        Launches ansible runner with passed parameters
+
+        Args:
+            params_to_execute: parameters to be used to launch runner
+
+        Returns:
+            ansible runner object after execution
+        """
+        assert 'module' in params_to_execute, "Argument 'module' must be defined for runner execution"
+        logger.debug(f"Collected next params for ansible runner: {params_to_execute}")
+
+        # set ansible verbosity level
+        params_to_execute['verbosity'] = self._verbosity
+
+        # directory where ansible artifacts will be stored
+        params_to_execute['private_data_dir'] = self._private_data_dir
+
+        # entry point of playbook execution
+        runner = ansible_runner.run(**params_to_execute)
+        logger.debug(f"Stats of '{params_to_execute['module']}' module execution: {runner.stats}")
+        return runner
+
     async def execute_echo_task(self, need_gather_facts: bool) -> None:
         """
         Executes ansible ping task
@@ -107,11 +132,13 @@ class AnsibleExecutor:
         if runner.rc != self.success_rc:
             logger.error(f"Unsuccessful ansible result code [rc={runner.rc}]")
             fatal_message = self._get_fatal_output_message(runner)
+            if not fatal_message:
+                fatal_message = runner.stdout.read()
             raise AnsibleExecuteError(err_code=runner.rc,
                                       playbook_file=self.echo_playbook,
                                       fatal_output=fatal_message)
 
-    def _get_fatal_output_message(self, runner: Runner) -> str:
+    def _get_fatal_output_message(self, runner: Runner) -> Optional[str]:
         """
         Gets output lines start with word 'fatal' from runner and forms message
 
@@ -127,8 +154,9 @@ class AnsibleExecutor:
         if len(fatal_output) == 1:
             return fatal_output[0]
         if len(fatal_output) == 0:
-            return f"Unable to find line starts with 'fatal' word.\n" \
-                   f"For more info see ansible artifact: {runner.config.artifact_dir}"
+            logger.debug(f"Unable to find line starts with 'fatal' word.\n "
+                         f"For more info see ansible artifact: {runner.config.artifact_dir}")
+            return None
         # len(fatal_output) > 1:
         return '\r\n'.join(fatal_output)
 
@@ -209,4 +237,42 @@ class AnsibleExecutor:
             fatal_message = self._get_fatal_output_message(runner)
             raise AnsibleExecuteError(err_code=runner.rc,
                                       playbook_file=self.file_create_playbook,
+                                      fatal_output=fatal_message)
+
+    async def execute_user_creation_task(self, user_name: str,
+                                         privilege_escalation_group: Optional[str]) -> None:
+        """
+        Creates new user
+
+        Args:
+            user_name: name of the user to create
+            privilege_escalation_group: 'sudo' group that will be added for user, optional
+        """
+        module = "ansible.builtin.user"
+        logger.debug(f"\n[{module}] task start")
+
+        if privilege_escalation_group:
+            module_args = f"name={user_name} " \
+                          f"shell='/bin/bash' " \
+                          f"groups={privilege_escalation_group} " \
+                          f"append=true"
+        else:
+            module_args = f"name={user_name} " \
+                          f"shell='/bin/bash'"
+
+        params_to_execute = {
+            'host_pattern': self.target_host,
+            'module': module,
+            'module_args': module_args
+        }
+        runner = await self._loop.run_in_executor(None, self._run_ad_hoc_command, params_to_execute)
+
+        if runner.rc != self.success_rc:
+            logger.error(f"Unsuccessful ansible result code [rc={runner.rc}]")
+            fatal_message = self._get_fatal_output_message(runner)
+            if not fatal_message:
+                fatal_message = runner.stdout.read()
+            logger.error(fatal_message)
+            raise AnsibleExecuteError(err_code=runner.rc,
+                                      playbook_file=module,
                                       fatal_output=fatal_message)

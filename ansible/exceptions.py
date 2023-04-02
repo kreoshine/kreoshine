@@ -13,4 +13,4 @@ class AnsibleExecuteError(Exception):
         self.fatal_output = fatal_output
 
     def __str__(self):
-        return f"[rc: {self.code}] error during executing playbook '{self.playbook_file}'"
+        return f"[rc: {self.code}] error during executing playbook '{self.playbook_file}': \n{self.fatal_output}"

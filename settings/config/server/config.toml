@@ -1,5 +1,11 @@
 [development.server]
 ip = "127.0.0.1"
+project_root_path = ""
 
 [production.server]
 ip = "127.0.0.1"
+project_root_path = "/home/admin/kreoshine"
+
+[production.server.admin]
+user_name = "admin"
+sudo_group = "sudo"
