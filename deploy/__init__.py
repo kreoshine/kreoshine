@@ -13,9 +13,6 @@ from settings import config, SETTINGS_DIR
 
 logger = logging.getLogger('ansible_deploy')
 
-PROJECT_DIR = str(Path(__file__).parent.parent.resolve())
-TEMPORARY_DIR = os.path.join(PROJECT_DIR, 'tmp/')
-
 # allowed deployment modes
 DEVELOPMENT_MODE = 'development'
 PRODUCTION_MODE = 'production'
@@ -45,8 +42,9 @@ def configure_deploy_logging_locally(logger_file: str):
 
 async def init_deploy():
     """ Entry point for deployment initialization """
-    create_directory(dir_path=TEMPORARY_DIR)
-    configure_deploy_logging_locally(logger_file=os.path.join(TEMPORARY_DIR, 'ansible-deploy.log'))
+    local_tmp_dir = os.path.join(str(Path(__file__).parent.parent.resolve()), 'tmp/')
+    create_directory(dir_path=local_tmp_dir)
+    configure_deploy_logging_locally(logger_file=os.path.join(local_tmp_dir, 'ansible-deploy.log'))
 
     deploy_mode = config.deploy.mode
     assert deploy_mode in (PRODUCTION_MODE, DEVELOPMENT_MODE), \
@@ -56,7 +54,7 @@ async def init_deploy():
     logger.info(f"Initiate '{deploy_mode}' mode of deployment on '{target_host}' host")
 
     ansible = AnsibleExecutor(destination_host=target_host,
-                              private_data_dir=TEMPORARY_DIR,
+                              private_data_dir=local_tmp_dir,
                               verbosity=config.ansible.verbosity)
     logger.debug(f"Successfully initiate instance of 'ansible executor' class")
 
