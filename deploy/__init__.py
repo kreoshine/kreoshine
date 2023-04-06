@@ -1,20 +1,16 @@
 """
 Package for deployment
 """
-import asyncio
 import logging.config
 import logging
 import os
-from pathlib import Path
 
 from ansible import AnsibleExecutor
-from settings import config, SETTINGS_DIR
+from deploy.modes import DEVELOPMENT_MODE, PRODUCTION_MODE
+from deploy.tasks import *
+from settings import config
 
 logger = logging.getLogger('ansible_deploy')
-
-# allowed deployment modes
-DEVELOPMENT_MODE = 'development'
-PRODUCTION_MODE = 'production'
 
 
 def configure_deploy_logging_locally(logger_file: str):
@@ -28,44 +24,6 @@ def configure_deploy_logging_locally(logger_file: str):
     if not deploy_log_config['handlers']['service_file']['filename']:
         deploy_log_config['handlers']['service_file']['filename'] = logger_file
     logging.config.dictConfig(config=deploy_log_config)
-
-
-async def prepare_project_for_deployment(ansible: AnsibleExecutor):
-    """
-    Performs pre-deployment tasks regarding the project and in dependency of the deployment mode
-    """
-    deploy_mode = config.deploy.mode
-    if deploy_mode == DEVELOPMENT_MODE:
-        settings_directory = SETTINGS_DIR
-        # make available absolute project path in deployment
-        config.server.project_root_path = str(Path(__file__).parent.parent.resolve())
-    else:  # deploy_mode == PRODUCTION_MODE
-        settings_directory = os.path.join(config.server.project_root_path, 'settings')
-        # be sure that user admin existing
-        admin_creation_task = asyncio.create_task(
-            ansible.execute_user_creation_task(user_name=config.server.admin.user_name,
-                                               privilege_escalation_group=config.server.admin.sudo_group))
-        await admin_creation_task  # fixme: need sudo permissions
-        # todo: clone repository to admin home dir
-
-    logger.debug(f"Define '{deploy_mode}' environment for dynaconf: {os.path.join(settings_directory, '.env')}")
-    dote_env_content = f'export KREOSHINE_ENV={deploy_mode.upper()}'
-    env_creation_task = asyncio.create_task(ansible.execute_file_create_task(target_dir=settings_directory,
-                                                                             file_name='.env',
-                                                                             file_content=dote_env_content))
-    await env_creation_task
-
-
-async def install_docker(ansible: AnsibleExecutor):
-    # todo: install docker
-    pass
-
-
-async def configure_nginx(ansible: AnsibleExecutor) -> None:
-    """ Configures nginx
-    Args:
-        ansible: instance of ansible executor
-    """
 
 
 async def perform_deployment(deploy_mode: str, local_output_dir: str):
@@ -91,12 +49,11 @@ async def perform_deployment(deploy_mode: str, local_output_dir: str):
                                        verbosity=config.ansible.verbosity)
     logger.debug(f"Successfully initiate instance of 'ansible executor' class")
 
-    echo_task = asyncio.create_task(ansible_executor.execute_echo_task(need_gather_facts=False))
-    await echo_task
+    await echo_host(ansible=ansible_executor, need_gather_facts=True if deploy_mode == PRODUCTION_MODE else False)
     logger.info(f"Connection to {ansible_executor.target_host} host available")
 
     logger.debug("Preparing the project for deployment")
-    await prepare_project_for_deployment(ansible=ansible_executor)
+    await make_preparation(ansible=ansible_executor)
 
     logger.debug("Docker installation")
     await install_docker(ansible=ansible_executor)
