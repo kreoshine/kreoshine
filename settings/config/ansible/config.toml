@@ -1,0 +1,5 @@
+[development.ansible]
+verbosity = 1
+
+[production.ansible]
+verbosity = 0

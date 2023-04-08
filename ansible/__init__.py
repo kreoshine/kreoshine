@@ -15,10 +15,7 @@ from ansible.exceptions import AnsibleExecuteError
 
 logger = logging.getLogger('ansible_deploy')
 
-ANSIBLE_PRIVATE_DATA_DIR = os.path.join(str(Path(__file__).parent.parent.resolve()), 'tmp/ansible/')
-
 PLAYBOOK_LOCATION_DIR = os.path.join(str(Path(__file__).parent), 'playbooks/')
-ANSIBLE_VERBOSITY = 1
 
 
 class AnsibleExecutor:
@@ -26,9 +23,11 @@ class AnsibleExecutor:
     Represents async methods for running different playbooks
     """
 
-    def __init__(self, destination_host: str):
+    def __init__(self, destination_host: str, private_data_dir: str, verbosity: int):
+        self._private_data_dir = private_data_dir
         self._loop = asyncio.get_event_loop()
         self._destination_host = destination_host
+        self._verbosity = verbosity
 
     @property
     def target_host(self) -> str:
@@ -55,11 +54,6 @@ class AnsibleExecutor:
         """ Successful result of ansible task execution """
         return 0
 
-    @property
-    def _ansible_verbosity(self) -> int:
-        """ Every extra count of 'v' will provide more debug output """
-        return ANSIBLE_VERBOSITY
-
     def _run_playbook(self, params_to_execute: dict) -> Runner:
         """
         (Synchronously!)
@@ -78,10 +72,10 @@ class AnsibleExecutor:
         logger.debug(f"Collected next params for ansible runner: {params_to_execute}")
 
         # set ansible verbosity level
-        params_to_execute['verbosity'] = self._ansible_verbosity
+        params_to_execute['verbosity'] = self._verbosity
 
         # directory where ansible artifacts will be stored
-        params_to_execute['private_data_dir'] = ANSIBLE_PRIVATE_DATA_DIR
+        params_to_execute['private_data_dir'] = self._private_data_dir
 
         # entry point of playbook execution
         runner = ansible_runner.run(**params_to_execute)
@@ -216,4 +210,3 @@ class AnsibleExecutor:
             raise AnsibleExecuteError(err_code=runner.rc,
                                       playbook_file=self.file_create_playbook,
                                       fatal_output=fatal_message)
-
