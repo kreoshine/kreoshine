@@ -37,11 +37,6 @@ class AnsibleExecutor(AbstractAnsibleExecutor):
         return os.path.join(PLAYBOOK_LOCATION_DIR, 'echo.yml')
 
     @property
-    def file_line_update_playbook(self) -> str:
-        """ Location of the 'file_line_update' playbook file """
-        return os.path.join(PLAYBOOK_LOCATION_DIR, 'file_line_update.yml')
-
-    @property
     def file_create_playbook(self) -> str:
         """ Location of the 'file_create' playbook file """
         return os.path.join(PLAYBOOK_LOCATION_DIR, 'file_create.yml')
@@ -81,18 +76,18 @@ class AnsibleExecutor(AbstractAnsibleExecutor):
             string_to_replace: string to be replaced
             new_string: string to be inserted
         """
-        logger.debug("\n[%s] playbook start", os.path.basename(self.file_line_update_playbook))
+        module_name = 'ansible.builtin.lineinfile'
+        logger.info("\n[%s] task", module_name)
 
         params_to_execute = {
-            'playbook': self.file_line_update_playbook,
-            'extravars': {
-                ansible_const.HOST_NAME: self.target_host,
-                ansible_const.FILE_PATH: str(file_path),
-                ansible_const.STRING_TO_REPLACE: string_to_replace,
-                ansible_const.NEW_STRING: new_string
-            }
+            'host_pattern': self.target_host,
+            'module': module_name,
+            'module_args': f"path={str(file_path)}"
+                           f"regexp='^{string_to_replace}'"
+                           f"line={new_string}"
+                           f"firstmatch=true",
         }
-        await self._loop.run_in_executor(None, self._run_playbook, params_to_execute)
+        await self._loop.run_in_executor(None, self._run_ad_hoc_command, params_to_execute)
 
     @error_log_handler
     async def execute_file_create_task(self, target_dir: str, file_name: str, file_content: str) -> None:
