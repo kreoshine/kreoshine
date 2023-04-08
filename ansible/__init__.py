@@ -5,6 +5,7 @@ from ansible.abstract_executor import AbstractAnsibleExecutor
 from ansible.mixins import PlaybookExecutorMixin, ModuleExecutorMixin
 
 
+# pylint: disable = too-few-public-methods
 class AnsibleExecutor(AbstractAnsibleExecutor, PlaybookExecutorMixin, ModuleExecutorMixin):
     """
     Represents async methods for running different tasks via ansible-runner

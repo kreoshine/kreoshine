@@ -51,7 +51,7 @@ class ModuleExecutorMixin(BaseExecutorMixin, ABC):
             privilege_escalation_group: 'sudo' group that will be added for user, optional
         """
         module_name = "ansible.builtin.user"
-        logger.info(f"\n[{module_name}] task")
+        logger.info("\n[%s] task", module_name)
 
         if privilege_escalation_group:
             module_args = f"name={user_name} " \

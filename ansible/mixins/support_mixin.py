@@ -4,6 +4,7 @@ Module with a base mixin that is supposed to support
 from ansible_runner import Runner
 
 
+# pylint: disable = too-few-public-methods
 class BaseExecutorMixin:
     """ Class is responsible for supporting mixins """
 

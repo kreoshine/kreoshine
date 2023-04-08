@@ -1,8 +1,9 @@
 """
 Ansible exceptions
 """
-from ansible_runner import Runner
 from typing import Optional
+
+from ansible_runner import Runner
 
 
 class KnownAnsibleError(Exception):
@@ -15,10 +16,8 @@ class KnownAnsibleError(Exception):
         self.runner_rc = runner.rc,
         self.runner_status = runner.status,
         self.runner_stats = runner.stats,
-        self.info = "Ansible error [rc: {rc}] (status {status}. \n" \
-                    "Ansible stats: {stats} \n".format(rc=self.runner_rc,
-                                                       status=self.runner_status,
-                                                       stats=self.runner_stats)
+        self.info = f"Ansible error [rc: {self.runner_rc}] (status {self.runner_status}. \n" \
+                    f"Ansible stats: {self.runner_stats} \n"
         self.err_message = err_msg,
         self.error_output = error_output
 
@@ -33,8 +32,8 @@ class AnsibleNoHostsMatched(KnownAnsibleError):
 
     def __init__(self, runner: Runner, host_pattern: str):
         super().__init__(runner,
-                         err_msg="No hosts matched! There're no any processed host "
-                                 "(host pattern: '{pattern}'). \n".format(pattern=host_pattern))
+                         err_msg="No hosts matched! There are no any processed host "
+                                 f"(host pattern: '{host_pattern}'). \n")
 
 
 class AnsibleExecuteError(KnownAnsibleError):
@@ -44,7 +43,6 @@ class AnsibleExecuteError(KnownAnsibleError):
 
     def __init__(self, runner: Runner, host_pattern: str, ansible_entity_name: str, fatal_output: Optional[str]):
         super().__init__(runner,
-                         err_msg="Ansible execution error of '{entity_name}' "
-                                 "(host pattern: '{pattern}'). \n".format(entity_name=ansible_entity_name,
-                                                                          pattern=host_pattern),
+                         err_msg=f"Ansible execution error of '{ansible_entity_name}' "
+                                 f"(host pattern: '{host_pattern}'). \n",
                          error_output=fatal_output if fatal_output else runner.stdout.read())
