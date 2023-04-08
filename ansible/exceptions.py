@@ -13,16 +13,16 @@ class KnownAnsibleError(Exception):
 
     def __init__(self, runner: Runner, err_msg: str, error_output: Optional[str] = None):
         super().__init__()
-        self.runner_rc = runner.rc,
-        self.runner_status = runner.status,
-        self.runner_stats = runner.stats,
+        self.runner_rc = runner.rc
+        self.runner_status = runner.status
+        self.runner_stats = runner.stats
         self.info = f"Ansible error [rc: {self.runner_rc}] (status {self.runner_status}. \n" \
                     f"Ansible stats: {self.runner_stats} \n"
-        self.err_message = err_msg,
+        self.err_message = err_msg
         self.error_output = error_output
 
     def __str__(self):
-        return "{}\n{}".format(self.err_message, self.info)
+        return f"{self.err_message}\n{self.info}"
 
 
 class AnsibleNoHostsMatched(KnownAnsibleError):
