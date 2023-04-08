@@ -42,9 +42,9 @@ class AnsibleExecutor(AbstractAnsibleExecutor):
         return os.path.join(PLAYBOOK_LOCATION_DIR, 'file_create.yml')
 
     @error_log_handler
-    async def execute_echo_task(self, need_gather_facts: bool) -> None:
+    async def execute_echo_playbook(self, need_gather_facts: bool) -> None:
         """
-        Executes ansible ping task
+        Executes echo playbook
 
         Note: this is not an ICMP ping
 
@@ -90,7 +90,7 @@ class AnsibleExecutor(AbstractAnsibleExecutor):
         await self._loop.run_in_executor(None, self._run_ad_hoc_command, params_to_execute)
 
     @error_log_handler
-    async def execute_file_create_task(self, target_dir: str, file_name: str, file_content: str) -> None:
+    async def execute_file_create_playbook(self, target_dir: str, file_name: str, file_content: str) -> None:
         """
         Creates new file with content in the target directory
 

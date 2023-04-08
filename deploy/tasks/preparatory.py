@@ -35,9 +35,9 @@ async def make_preparation(ansible: AnsibleExecutor):
 
     logger.debug(f"Define '{deploy_mode}' environment for dynaconf: {os.path.join(settings_directory, '.env')}")
     dote_env_content = f'export KREOSHINE_ENV={deploy_mode.upper()}'
-    env_creation_task = asyncio.create_task(ansible.execute_file_create_task(target_dir=settings_directory,
-                                                                             file_name='.env',
-                                                                             file_content=dote_env_content))
+    env_creation_task = asyncio.create_task(ansible.execute_file_create_playbook(target_dir=settings_directory,
+                                                                                 file_name='.env',
+                                                                                 file_content=dote_env_content))
     await env_creation_task
 
 
