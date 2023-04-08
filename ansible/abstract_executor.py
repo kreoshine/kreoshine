@@ -17,7 +17,7 @@ logger = logging.getLogger('ansible_deploy')
 
 class AbstractAnsibleExecutor:
     """
-    Class contains private methods for launching `runner` in various ways
+    Class contains methods for launching `runner` in various ways
     """
 
     def __init__(self, private_data_dir: str, verbosity: int):
@@ -29,7 +29,7 @@ class AbstractAnsibleExecutor:
         """ Successful result of ansible task execution """
         return 0
 
-    def _run_playbook(self, params_to_execute: dict) -> Runner:
+    def run_playbook(self, params_to_execute: dict) -> Runner:
         """
         (Synchronously!)
         Launches ansible runner with passed parameters as an `ansible-playbook` command
@@ -61,7 +61,7 @@ class AbstractAnsibleExecutor:
                                      executed_entity=playbook_name)
         return runner
 
-    def _run_ad_hoc_command(self, params_to_execute: dict) -> Runner:
+    def run_ad_hoc_command(self, params_to_execute: dict) -> Runner:
         """
         (Synchronously!)
         Launches ansible runner with passed parameters as an `ad-hoc` command

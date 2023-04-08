@@ -38,7 +38,7 @@ class ModuleExecutorMixin(BaseExecutorMixin, ABC):
                            f"firstmatch=true",
         }
         loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, self._run_ad_hoc_command, params_to_execute)
+        await loop.run_in_executor(None, self.run_ad_hoc_command, params_to_execute)
 
     @error_log_handler
     async def execute_user_creation_task(self, user_name: str,
@@ -68,4 +68,4 @@ class ModuleExecutorMixin(BaseExecutorMixin, ABC):
             'module_args': module_args
         }
         loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, self._run_ad_hoc_command, params_to_execute)
+        await loop.run_in_executor(None, self.run_ad_hoc_command, params_to_execute)

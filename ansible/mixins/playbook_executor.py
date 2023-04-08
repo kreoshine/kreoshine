@@ -40,7 +40,7 @@ class PlaybookExecutorMixin(BaseExecutorMixin, PermittedPlaybooksMixin, ABC):
             }
         }
         loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, self._run_playbook, params_to_execute)
+        await loop.run_in_executor(None, self.run_playbook, params_to_execute)
 
     @error_log_handler
     async def execute_file_create_playbook(self, target_dir: str, file_name: str, file_content: str) -> None:
@@ -65,4 +65,4 @@ class PlaybookExecutorMixin(BaseExecutorMixin, PermittedPlaybooksMixin, ABC):
             }
         }
         loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, self._run_playbook, params_to_execute)
+        await loop.run_in_executor(None, self.run_playbook, params_to_execute)
