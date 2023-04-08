@@ -1,6 +1,6 @@
 ---
 - name: Communication with '{{ host_name }}' host
-  hosts: "{{ host_name }}"
+  hosts: "{{ host_pattern }}"
   gather_facts: '{{ need_gather_facts }}'
   become: false
   tasks:

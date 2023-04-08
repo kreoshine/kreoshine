@@ -44,13 +44,13 @@ async def perform_deployment(deploy_mode: str, local_output_dir: str):
     target_host = config.server.ip
     logger.info(f"Initiate '{deploy_mode}' mode of deployment on '{target_host}' host")
 
-    ansible_executor = AnsibleExecutor(destination_host=target_host,
+    ansible_executor = AnsibleExecutor(host_pattern=target_host,
                                        private_data_dir=local_output_dir,
                                        verbosity=config.ansible.verbosity)
     logger.debug(f"Successfully initiate instance of 'ansible executor' class")
 
     await echo_host(ansible=ansible_executor, need_gather_facts=True if deploy_mode == PRODUCTION_MODE else False)
-    logger.info(f"Connection to {ansible_executor.target_host} host available")
+    logger.info(f"Connection to {ansible_executor.target_host_pattern} host available")
 
     logger.debug("Preparing the project for deployment")
     await make_preparation(ansible=ansible_executor)

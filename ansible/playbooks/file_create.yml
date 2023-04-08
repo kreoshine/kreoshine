@@ -1,6 +1,6 @@
 ---
 - name: Creating new file {{ file_name }}
-  hosts: "{{ host_name }}"
+  hosts: "{{ host_pattern }}"
   gather_facts: false
   become: false
   tasks:

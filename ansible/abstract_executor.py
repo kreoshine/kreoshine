@@ -57,7 +57,7 @@ class AbstractAnsibleExecutor:
         logger.info("Stats of '%s' playbook execution: %s", playbook_name, runner.stats)
 
         self._check_runner_execution(runner,
-                                     host_pattern=params_to_execute['extravars'][ansible_const.HOST_NAME],
+                                     host_pattern=params_to_execute['extravars'][ansible_const.HOST_PATTERN],
                                      executed_entity=playbook_name)
         return runner
 

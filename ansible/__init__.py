@@ -21,15 +21,15 @@ class AnsibleExecutor(AbstractAnsibleExecutor):
     Represents async methods for running different playbooks
     """
 
-    def __init__(self, destination_host: str, private_data_dir: str, verbosity: int):
+    def __init__(self, host_pattern: str, private_data_dir: str, verbosity: int):
         super().__init__(private_data_dir, verbosity)
         self._loop = asyncio.get_event_loop()
-        self._destination_host = destination_host
+        self._host_pattern = host_pattern
 
     @property
-    def target_host(self) -> str:
-        """ Target host for which ansible executor is running """
-        return self._destination_host
+    def target_host_pattern(self) -> str:
+        """ Target host pattern for which ansible executor is running """
+        return self._host_pattern
 
     @property
     def echo_playbook(self) -> str:
@@ -59,7 +59,7 @@ class AnsibleExecutor(AbstractAnsibleExecutor):
         params_to_execute = {
             'playbook': self.echo_playbook,
             'extravars': {
-                ansible_const.HOST_NAME: self.target_host,
+                ansible_const.HOST_PATTERN: self.target_host_pattern,
                 ansible_const.NEED_GATHER_FACTS: need_gather_facts,
             }
         }
@@ -80,7 +80,7 @@ class AnsibleExecutor(AbstractAnsibleExecutor):
         logger.info("\n[%s] task", module_name)
 
         params_to_execute = {
-            'host_pattern': self.target_host,
+            'host_pattern': self.target_host_pattern,
             'module': module_name,
             'module_args': f"path={str(file_path)}"
                            f"regexp='^{string_to_replace}'"
@@ -105,7 +105,7 @@ class AnsibleExecutor(AbstractAnsibleExecutor):
         params_to_execute = {
             'playbook': self.file_create_playbook,
             'extravars': {
-                ansible_const.HOST_NAME: self.target_host,
+                ansible_const.HOST_PATTERN: self.target_host_pattern,
                 ansible_const.TARGET_DIR: str(target_dir),
                 ansible_const.FILE_NAME: str(file_name),
                 ansible_const.FILE_CONTENT: file_content
@@ -136,7 +136,7 @@ class AnsibleExecutor(AbstractAnsibleExecutor):
                           f"shell='/bin/bash'"
 
         params_to_execute = {
-            'host_pattern': self.target_host,
+            'host_pattern': self.target_host_pattern,
             'module': module_name,
             'module_args': module_args
         }

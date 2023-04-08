@@ -1,7 +1,7 @@
 """
 Constants to be used for ansible playbook execution
 """
-HOST_NAME = 'host_name'
+HOST_PATTERN = 'host_pattern'
 NEED_GATHER_FACTS = 'need_gather_facts'
 
 FILE_PATH = 'file_path'
