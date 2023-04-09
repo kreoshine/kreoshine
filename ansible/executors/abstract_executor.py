@@ -1,15 +1,11 @@
 """
-Module is responsible for runner launching
+Module contain abstract ansible executor as a base helper class
 """
 import logging
-import os
 
 from typing import List, Optional
 
-import ansible_runner
 from ansible_runner import Runner, AnsibleRunnerException
-
-from ansible import ansible_const
 from ansible.exceptions import AnsibleExecuteError, AnsibleNoHostsMatched
 
 logger = logging.getLogger('ansible_deploy')
@@ -19,79 +15,27 @@ class AbstractAnsibleExecutor:
     """
     Class contains methods for launching `runner` in various ways
     """
-
-    def __init__(self, private_data_dir: str, verbosity: int):
+    def __init__(self, host_pattern: str, private_data_dir: str, verbosity: int):
+        self._host_pattern = host_pattern
         self._private_data_dir = private_data_dir
         self._verbosity = verbosity
+
+    @property
+    def host_pattern(self) -> str:
+        """ Target host pattern for which ansible executor is running """
+        return self._host_pattern
 
     @property
     def success_rc(self) -> int:
         """ Successful result of ansible task execution """
         return 0
 
-    def run_playbook(self, params_to_execute: dict) -> Runner:
-        """
-        (Synchronously!)
-        Launches ansible runner with passed parameters as an `ansible-playbook` command
-
-        Args:
-            params_to_execute: parameters to be used to launch runner
-
-        Returns:
-            ansible runner object after execution
-        """
-        assert 'playbook' in params_to_execute, "Argument 'playbook' must be defined for a playbook execution"
-        playbook_name = os.path.basename(params_to_execute['playbook'])
-        logger.info("Initiate '%s' playbook to execute", playbook_name)
-
-        logger.debug("Collected next params for ansible runner: %s", params_to_execute)
-
+    def _add_common_ansible_params(self, params_to_execute: dict) -> None:
         # set ansible verbosity level
         params_to_execute['verbosity'] = self._verbosity
 
         # directory where ansible artifacts will be stored
         params_to_execute['private_data_dir'] = self._private_data_dir
-
-        # entry point of playbook execution
-        runner = ansible_runner.run(**params_to_execute)
-        logger.info("Stats of '%s' playbook execution: %s", playbook_name, runner.stats)
-
-        self._check_runner_execution(runner,
-                                     host_pattern=params_to_execute['extravars'][ansible_const.HOST_PATTERN],
-                                     executed_entity=playbook_name)
-        return runner
-
-    def run_ad_hoc_command(self, params_to_execute: dict) -> Runner:
-        """
-        (Synchronously!)
-        Launches ansible runner with passed parameters as an `ad-hoc` command
-
-        Args:
-            params_to_execute: parameters to be used to launch runner
-
-        Returns:
-            ansible runner object after execution
-        """
-        assert 'module' in params_to_execute, "Argument 'module' must be defined for an ad-hoc command execution"
-        module_name = params_to_execute['module']
-        logger.info("Initiate '%s' module to execute", module_name)
-
-        logger.debug("Collected next params for ansible runner: %s", params_to_execute)
-
-        # set ansible verbosity level
-        params_to_execute['verbosity'] = self._verbosity
-
-        # directory where ansible artifacts will be stored
-        params_to_execute['private_data_dir'] = self._private_data_dir
-
-        # entry point of module execution
-        runner = ansible_runner.run(**params_to_execute)
-        logger.debug("Stats of '%s' module execution: %s", module_name, runner.stats)
-
-        self._check_runner_execution(runner,
-                                     host_pattern=params_to_execute['host_pattern'],
-                                     executed_entity=module_name)
-        return runner
 
     def _check_runner_execution(self, runner: Runner, host_pattern: str, executed_entity: str) -> None:
         """

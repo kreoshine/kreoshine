@@ -20,7 +20,7 @@ async def make_preparation(ansible: AnsibleExecutor):
     deploy_mode = config.deploy.mode
     if deploy_mode == PRODUCTION_MODE:
         admin_creation_task = asyncio.create_task(
-            ansible.execute_user_creation_task(user_name=config.server.admin.user_name,
+            ansible.ansible_module.create_user(user_name=config.server.admin.user_name,
                                                privilege_escalation_group=config.server.admin.sudo_group))
         await admin_creation_task  # fixme: need sudo permissions
         # todo: clone repository to admin home dir
@@ -35,7 +35,7 @@ async def make_preparation(ansible: AnsibleExecutor):
 
     logger.debug(f"Define '{deploy_mode}' environment for dynaconf: {os.path.join(settings_directory, '.env')}")
     dote_env_content = f'export KREOSHINE_ENV={deploy_mode.upper()}'
-    env_creation_task = asyncio.create_task(ansible.execute_file_create_playbook(target_dir=settings_directory,
+    env_creation_task = asyncio.create_task(ansible.ansible_playbook.create_file(target_dir=settings_directory,
                                                                                  file_name='.env',
                                                                                  file_content=dote_env_content))
     await env_creation_task
