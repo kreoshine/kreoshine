@@ -22,10 +22,10 @@ class IndexView(View, CorsViewMixin):
         return await self._process_get(self.request)
 
     async def _process_get(self, request: Request) -> Response:
-        logger.debug(f"Got request: {request}")
+        logger.debug("Got request: %s", request)
         response_dict = {
             const.STATUS_CODE: 200,
             const.BODY: {}
         }
-        logger.debug(f"Send response: {response_dict}")
+        logger.debug("Send response: %s", response_dict)
         return web.json_response(response_dict)

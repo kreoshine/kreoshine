@@ -1,9 +1,9 @@
 """
 Index application
 """
+import logging
 import logging.config
 import asyncio
-import logging
 import os
 import sys
 from concurrent.futures import ThreadPoolExecutor

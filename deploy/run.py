@@ -18,7 +18,6 @@ def create_directory(dir_path: str):
         print(f"Directory {dir_path} successfully created")
     except FileExistsError:
         print(f"Directory {dir_path} already exist")
-        pass
 
 
 if __name__ == '__main__':
