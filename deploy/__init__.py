@@ -1,19 +1,16 @@
 """
 Package for deployment
 """
-import asyncio
 import logging.config
 import logging
 import os
 
 from ansible import AnsibleExecutor
-from settings import config, SETTINGS_DIR
+from deploy.modes import DEVELOPMENT_MODE, PRODUCTION_MODE
+from deploy.tasks import *
+from settings import config
 
 logger = logging.getLogger('ansible_deploy')
-
-# allowed deployment modes
-DEVELOPMENT_MODE = 'development'
-PRODUCTION_MODE = 'production'
 
 
 def configure_deploy_logging_locally(logger_file: str):
@@ -47,18 +44,19 @@ async def perform_deployment(deploy_mode: str, local_output_dir: str):
     target_host = config.server.ip
     logger.info(f"Initiate '{deploy_mode}' mode of deployment on '{target_host}' host")
 
-    ansible = AnsibleExecutor(destination_host=target_host,
-                              private_data_dir=local_output_dir,
-                              verbosity=config.ansible.verbosity)
+    ansible_executor = AnsibleExecutor(host_pattern=target_host,
+                                       private_data_dir=local_output_dir,
+                                       verbosity=config.ansible.verbosity)
     logger.debug(f"Successfully initiate instance of 'ansible executor' class")
 
-    echo_task = asyncio.create_task(ansible.execute_echo_task(need_gather_facts=False))
-    await echo_task
-    logger.info(f"Connection to {ansible.target_host} host available")
+    await echo_host(ansible=ansible_executor, need_gather_facts=True if deploy_mode == PRODUCTION_MODE else False)
+    logger.info(f"Connection to {ansible_executor.target_host_pattern} host available")
 
-    logger.debug(f"Define '{deploy_mode}' environment for dynaconf: {os.path.join(SETTINGS_DIR, '.env')}")
-    dote_env_content = f'export KREOSHINE_ENV={deploy_mode.upper()}'
-    env_creation_task = asyncio.create_task(ansible.execute_file_create_task(target_dir=SETTINGS_DIR,
-                                                                             file_name='.env',
-                                                                             file_content=dote_env_content))
-    await env_creation_task
+    logger.debug("Preparing the project for deployment")
+    await make_preparation(ansible=ansible_executor)
+
+    logger.debug("Docker installation")
+    await install_docker(ansible=ansible_executor)
+
+    logger.debug("Configure Nginx as a web-server")
+    await configure_nginx(ansible=ansible_executor)

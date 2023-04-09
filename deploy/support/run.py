@@ -2,9 +2,8 @@
 Script for compatibility ansible-runner with Windows
 """
 import os.path
+from pathlib import Path
 from platform import platform
-
-from deploy import PROJECT_DIR
 
 
 def remove_lines_in_files(target_file: str, deletion_indicator_word: str) -> None:
@@ -25,6 +24,7 @@ def remove_lines_in_files(target_file: str, deletion_indicator_word: str) -> Non
 
 
 if __name__ == '__main__':
+    project_dir = os.path.join(str(Path(__file__).parent.parent.parent.resolve()))
     if platform == 'Windows':
-        problem_file = os.path.join(PROJECT_DIR, 'venv/lib/python3.9/site-packages/ansible_runner/utils/__init__.py')
+        problem_file = os.path.join(project_dir, 'venv/lib/python3.9/site-packages/ansible_runner/utils/__init__.py')
         remove_lines_in_files(target_file=problem_file, deletion_indicator_word='fcntl')

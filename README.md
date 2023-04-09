@@ -25,7 +25,12 @@ python -m venv venv
 pip install -r deploy/pip-freeze.txt
 ```
 
-7. **TODO**: make local deploy via Docker for index service (in Dockerfile or playbook, or else) :
+7. Install collections for ansible
+```angular2html
+ansible-galaxy collection install -r ansible/requirements.yml
+```
+
+8. **TODO**: make local deploy via Docker for index service (in Dockerfile or playbook, or else) :
    1. install requirements for service
    2. need copy of settings for service
    3. make build with backend/app/services/index
