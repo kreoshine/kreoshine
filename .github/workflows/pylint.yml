@@ -29,4 +29,4 @@ jobs:
         then pip install -r backend/app/services/index/pip-freeze.txt; fi
     - name: Analysing the code with pylint
       run: |
-        pylint --max-line-length=120 $(git ls-files '*.py')
+        pylint --max-line-length=120 --init-hook="import sys; sys.path.append('backend/app/services/index')" $(git ls-files '*.py')
