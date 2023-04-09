@@ -4,10 +4,9 @@ Job that make preparation before deployment
 import asyncio
 import logging
 import os
-from pathlib import Path
 
 from ansible import AnsibleExecutor
-from deploy import PRODUCTION_MODE, DEVELOPMENT_MODE
+from deploy.deploy_const import PROJECT_ROOT_PATH, PRODUCTION_MODE, DEVELOPMENT_MODE
 from settings import config, SETTINGS_DIR
 
 logger = logging.getLogger('ansible_deploy')
@@ -28,7 +27,7 @@ async def make_preparation(ansible: AnsibleExecutor):
     if deploy_mode == DEVELOPMENT_MODE:
         settings_directory = SETTINGS_DIR
         # make available absolute project path in deployment
-        config.server.project_root_path = str(Path(__file__).parent.parent.resolve())
+        config.server.project_root_path = PROJECT_ROOT_PATH
     else:  # deploy_mode == PRODUCTION_MODE
         settings_directory = os.path.join(config.server.project_root_path, 'settings')
         # be sure that user admin existing

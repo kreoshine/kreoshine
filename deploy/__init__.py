@@ -6,7 +6,7 @@ import logging
 import os
 
 from ansible import AnsibleExecutor
-from deploy.modes import DEVELOPMENT_MODE, PRODUCTION_MODE
+from deploy.deploy_const import DEVELOPMENT_MODE, PRODUCTION_MODE
 from deploy.jobs import *
 from settings import config
 
