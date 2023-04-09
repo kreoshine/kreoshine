@@ -1,5 +1,5 @@
 """
-TODO
+Job that make preparation before deployment
 """
 import asyncio
 import logging
