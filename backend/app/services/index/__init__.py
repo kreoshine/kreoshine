@@ -18,7 +18,7 @@ from settings import config
 logger = logging.getLogger('index_service')
 
 
-async def on_service_start(app):
+async def on_service_start(app):  # pylint: disable = unused-argument
     """ Initialization of 'index' service """
     service_config = config.app.services.index
     asyncio.get_event_loop().set_default_executor(ThreadPoolExecutor(max_workers=service_config['thread_pool_size']))
@@ -26,7 +26,7 @@ async def on_service_start(app):
     logger.info("Service 'index' successfully started")
 
 
-async def on_service_stop(app) -> None:
+async def on_service_stop(app) -> None:  # pylint: disable = unused-argument
     """ Stops tasks when the service is destroyed """
 
 
