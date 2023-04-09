@@ -17,19 +17,19 @@ async def make_preparation(ansible: AnsibleExecutor):
     Performs pre-deployment jobs regarding the project and in dependency of the deployment mode
     """
     deploy_mode = config.deploy.mode
+
+    if deploy_mode == DEVELOPMENT_MODE:
+        # make available absolute project path in deployment
+        config.server.project_root_path = PROJECT_ROOT_PATH
+    # else: no need to define project directory for production — it should be used from configuration
+
     if deploy_mode == PRODUCTION_MODE:
+        # be sure that user admin existing — his home directory will be used for project location
         admin_creation_task = asyncio.create_task(
             ansible.ansible_module.create_user(user_name=config.server.admin.user_name,
                                                privilege_escalation_group=config.server.admin.sudo_group))
         await admin_creation_task  # fixme: need sudo permissions
         # todo: clone repository to admin home dir
-
-    if deploy_mode == DEVELOPMENT_MODE:
-        # make available absolute project path in deployment
-        config.server.project_root_path = PROJECT_ROOT_PATH
-    else:  # deploy_mode == PRODUCTION_MODE
-        pass
-        # be sure that user admin existing
 
     logger.debug("Define '%s' environment for dynaconf: %s", deploy_mode, os.path.join(SETTINGS_ROOT_PATH, '.env'))
     dote_env_content = f'export KREOSHINE_ENV={deploy_mode.upper()}'
