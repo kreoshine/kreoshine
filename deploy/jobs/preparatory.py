@@ -7,7 +7,7 @@ import os
 
 from ansible import AnsibleExecutor
 from deploy.deploy_const import PROJECT_ROOT_PATH, PRODUCTION_MODE, DEVELOPMENT_MODE
-from settings import config, SETTINGS_DIR
+from settings import config, SETTINGS_ROOT_PATH
 
 logger = logging.getLogger('ansible_deploy')
 
@@ -25,16 +25,15 @@ async def make_preparation(ansible: AnsibleExecutor):
         # todo: clone repository to admin home dir
 
     if deploy_mode == DEVELOPMENT_MODE:
-        settings_directory = SETTINGS_DIR
         # make available absolute project path in deployment
         config.server.project_root_path = PROJECT_ROOT_PATH
     else:  # deploy_mode == PRODUCTION_MODE
-        settings_directory = os.path.join(config.server.project_root_path, 'settings')
+        pass
         # be sure that user admin existing
 
-    logger.debug("Define '%s' environment for dynaconf: %s", deploy_mode, os.path.join(settings_directory, '.env'))
+    logger.debug("Define '%s' environment for dynaconf: %s", deploy_mode, os.path.join(SETTINGS_ROOT_PATH, '.env'))
     dote_env_content = f'export KREOSHINE_ENV={deploy_mode.upper()}'
-    env_creation_task = asyncio.create_task(ansible.ansible_playbook.create_file(target_dir=settings_directory,
+    env_creation_task = asyncio.create_task(ansible.ansible_playbook.create_file(target_dir=SETTINGS_ROOT_PATH,
                                                                                  file_name='.env',
                                                                                  file_content=dote_env_content))
     await env_creation_task
