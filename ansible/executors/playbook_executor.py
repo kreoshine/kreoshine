@@ -11,7 +11,7 @@ from ansible_runner import Runner
 
 from ansible import ansible_const
 from ansible.decorators import error_log_handler
-from ansible.executors import AbstractAnsibleExecutor
+from ansible.executors.abstract_executor import AbstractAnsibleExecutor
 
 logger = logging.getLogger('ansible_deploy')
 

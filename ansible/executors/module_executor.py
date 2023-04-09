@@ -8,8 +8,8 @@ from typing import Optional
 import ansible_runner
 from ansible_runner import Runner
 
-from ansible.executors import AbstractAnsibleExecutor
 from ansible.decorators import error_log_handler
+from ansible.executors.abstract_executor import AbstractAnsibleExecutor
 
 logger = logging.getLogger('ansible_deploy')
 
