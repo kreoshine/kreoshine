@@ -38,7 +38,7 @@ class AnsibleNoHostsMatched(KnownAnsibleError):
 
 class AnsibleExecuteError(KnownAnsibleError):
     """
-    Class of the exception that may be raised in the course of executing ansible tasks
+    Class of the exception that may be raised in the course of executing ansible jobs
     """
 
     def __init__(self, runner: Runner, host_pattern: str, ansible_entity_name: str, fatal_output: Optional[str]):

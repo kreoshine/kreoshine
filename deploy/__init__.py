@@ -7,7 +7,7 @@ import os
 
 from ansible import AnsibleExecutor
 from deploy.modes import DEVELOPMENT_MODE, PRODUCTION_MODE
-from deploy.tasks import *
+from deploy.jobs import *
 from settings import config
 
 logger = logging.getLogger('ansible_deploy')

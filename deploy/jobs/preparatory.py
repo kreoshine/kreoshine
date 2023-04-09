@@ -15,7 +15,7 @@ logger = logging.getLogger('ansible_deploy')
 
 async def make_preparation(ansible: AnsibleExecutor):
     """
-    Performs pre-deployment tasks regarding the project and in dependency of the deployment mode
+    Performs pre-deployment jobs regarding the project and in dependency of the deployment mode
     """
     deploy_mode = config.deploy.mode
     if deploy_mode == PRODUCTION_MODE:
