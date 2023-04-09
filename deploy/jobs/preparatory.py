@@ -11,6 +11,8 @@ from settings import config, SETTINGS_ROOT_PATH
 
 logger = logging.getLogger('ansible_deploy')
 
+# pylint: disable = fixme
+
 
 async def make_preparation(ansible: AnsibleExecutor):
     """
@@ -40,5 +42,9 @@ async def make_preparation(ansible: AnsibleExecutor):
 
 
 async def install_docker(ansible: AnsibleExecutor):
+    """ Installs Docker
+    Args:
+        ansible: instance of ansible executor
+        """
     # todo: install docker
-    pass
+    logger.debug("Installation docker on %s host", ansible.target_host_pattern)
