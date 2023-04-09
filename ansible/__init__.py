@@ -16,6 +16,7 @@ class AnsibleExecutor:
         self._module_executor = AnsibleModuleExecutor(host_pattern, private_data_dir, verbosity)
         self._playbook_executor = AnsiblePlaybookExecutor(host_pattern, private_data_dir, verbosity)
 
+    @property
     def target_host_pattern(self) -> str:
         """ Target host pattern for which ansible executor is running """
         return self._host_pattern
