@@ -6,10 +6,10 @@ from pathlib import Path
 
 from dynaconf import LazySettings
 
-SETTINGS_DIR = Path(os.path.abspath(__file__)).parent
+SETTINGS_ROOT_PATH = Path(os.path.abspath(__file__)).parent
 
 config = LazySettings(
-    ROOT_PATH_FOR_DYNACONF=SETTINGS_DIR,
+    ROOT_PATH_FOR_DYNACONF=SETTINGS_ROOT_PATH,
     SETTINGS_FILE_FOR_DYNACONF=[
         'config/ansible/config.toml',
         'config/deploy/config.toml',

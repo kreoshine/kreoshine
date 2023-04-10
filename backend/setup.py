@@ -1,3 +1,6 @@
+"""
+Setup module
+"""
 import os
 
 from importlib.machinery import SourceFileLoader
@@ -8,16 +11,19 @@ from setuptools import setup, find_packages
 
 MODULE_NAME = 'app'
 
+# pylint: disable = deprecated-method
 module = SourceFileLoader(
     MODULE_NAME, os.path.join(MODULE_NAME, '__init__.py')
 ).load_module(MODULE_NAME)
 
 
+# pylint: disable = consider-using-f-string
 def load_requirements(requirements_files: List[str]) -> list:
+    """ Loads requirements from a file """
     requirements = []
     for file in requirements_files:
-        with open(file, 'r') as f:
-            for req in parse_requirements(f.read()):
+        with open(file, 'r', encoding='utf-8') as file_with_requirements:
+            for req in parse_requirements(file_with_requirements.read()):
                 extras = '[{}]'.format(','.join(req.extras)) if req.extras else ''
                 requirements.append('{}{}{}'.format(req.name, extras, req.specifier))
     return requirements

@@ -6,8 +6,8 @@ import logging
 import os
 
 from ansible import AnsibleExecutor
-from deploy.modes import DEVELOPMENT_MODE, PRODUCTION_MODE
-from deploy.tasks import *
+from deploy.deploy_const import DEVELOPMENT_MODE, PRODUCTION_MODE
+from deploy.jobs import *
 from settings import config
 
 logger = logging.getLogger('ansible_deploy')
@@ -42,15 +42,14 @@ async def perform_deployment(deploy_mode: str, local_output_dir: str):
         f"Only two modes of deployment is allowed: '{DEVELOPMENT_MODE}' and '{PRODUCTION_MODE}'"
 
     target_host = config.server.ip
-    logger.info(f"Initiate '{deploy_mode}' mode of deployment on '{target_host}' host")
+    logger.info("Initiate '%s' mode of deployment on '%s' host", deploy_mode, target_host)
 
     ansible_executor = AnsibleExecutor(host_pattern=target_host,
                                        private_data_dir=local_output_dir,
                                        verbosity=config.ansible.verbosity)
-    logger.debug(f"Successfully initiate instance of 'ansible executor' class")
+    logger.debug("Successfully initiate instance of '%s' class", AnsibleExecutor.__name__)
 
-    await echo_host(ansible=ansible_executor, need_gather_facts=True if deploy_mode == PRODUCTION_MODE else False)
-    logger.info(f"Connection to {ansible_executor.target_host_pattern} host available")
+    await echo_host(ansible=ansible_executor, need_gather_facts=deploy_mode == PRODUCTION_MODE)
 
     logger.debug("Preparing the project for deployment")
     await make_preparation(ansible=ansible_executor)

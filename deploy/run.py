@@ -5,9 +5,9 @@ import asyncio
 import os
 
 from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
 
 from deploy import perform_deployment
+from deploy.deploy_const import PROJECT_ROOT_PATH
 from settings import config
 
 
@@ -18,12 +18,10 @@ def create_directory(dir_path: str):
         print(f"Directory {dir_path} successfully created")
     except FileExistsError:
         print(f"Directory {dir_path} already exist")
-        pass
 
 
 if __name__ == '__main__':
-    project_dir = str(Path(__file__).parent.parent.resolve())
-    tmp_directory = os.path.join(project_dir, 'tmp/')
+    tmp_directory = os.path.join(PROJECT_ROOT_PATH, 'tmp/')
     create_directory(dir_path=tmp_directory)
 
     asyncio.new_event_loop().set_default_executor(ThreadPoolExecutor(max_workers=2))
