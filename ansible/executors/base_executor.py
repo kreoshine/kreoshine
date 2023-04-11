@@ -5,15 +5,16 @@ import logging
 
 from typing import List, Optional
 
+import ansible_runner
 from ansible_runner import Runner, AnsibleRunnerException
 from ansible.exceptions import AnsibleExecuteError, AnsibleNoHostsMatched
 
 logger = logging.getLogger('ansible_deploy')
 
 
-class AbstractAnsibleExecutor:
+class BaseAnsibleExecutor:
     """
-    Class contains methods for launching `runner` in various ways
+    Class contains logic for launching and analysing `runner` in synchronous way
     """
     def __init__(self, host_pattern: str, private_data_dir: str, verbosity: int):
         self._host_pattern = host_pattern
@@ -30,12 +31,25 @@ class AbstractAnsibleExecutor:
         """ Successful result of ansible task execution """
         return 0
 
-    def _add_common_ansible_params(self, params_to_execute: dict) -> None:
+    def _execute_ansible_runner(self, params_to_execute: dict) -> Runner:
+        """        (Synchronously!)
+        Entry point for ansible-runner execution
+
+        Sets several params (such as verbosity and 'private data dir') before execution
+
+        Args:
+            params_to_execute: params for ansible-runner (for more info see `ansible-runner/interface.py`)
+        Returns:
+            ansible runner object after execution
+        """
         # set ansible verbosity level
         params_to_execute['verbosity'] = self._verbosity
 
         # directory where ansible artifacts will be stored
         params_to_execute['private_data_dir'] = self._private_data_dir
+
+        runner = ansible_runner.run(**params_to_execute)
+        return runner
 
     def _check_runner_execution(self, runner: Runner, host_pattern: str, executed_entity: str) -> None:
         """
