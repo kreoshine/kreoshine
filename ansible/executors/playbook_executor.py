@@ -6,12 +6,11 @@ import logging
 import os
 from pathlib import Path
 
-import ansible_runner
 from ansible_runner import Runner
 
 from ansible import ansible_const
 from ansible.decorators import error_log_handler
-from ansible.executors.abstract_executor import AbstractAnsibleExecutor
+from ansible.executors.base_executor import BaseAnsibleExecutor
 
 logger = logging.getLogger('ansible_deploy')
 
@@ -35,15 +34,14 @@ class PermittedPlaybooksMixin:
         return os.path.join(self._playbook_location_dir, 'file_create.yml')
 
 
-class AnsiblePlaybookExecutor(AbstractAnsibleExecutor, PermittedPlaybooksMixin):
+class AnsiblePlaybookExecutor(BaseAnsibleExecutor, PermittedPlaybooksMixin):
     """  Class is responsible for executing playbooks """
 
     def __init__(self, host_pattern: str, private_data_dir: str, verbosity: int):
         super().__init__(host_pattern=host_pattern, private_data_dir=private_data_dir, verbosity=verbosity)
 
     def _run_playbook(self, params_to_execute: dict) -> Runner:
-        """
-        (Synchronously!)
+        """        (Synchronously!)
         Launches ansible runner with passed parameters as an `ansible-playbook` command
 
         Args:
@@ -52,17 +50,14 @@ class AnsiblePlaybookExecutor(AbstractAnsibleExecutor, PermittedPlaybooksMixin):
         Returns:
             ansible runner object after execution
         """
-        assert 'playbook' in params_to_execute, "Argument 'playbook' must be defined for a playbook execution"
+        assert 'playbook' in params_to_execute, "Argument 'playbook' must be defined for a ansible-playbook execution"
         playbook_name = os.path.basename(params_to_execute['playbook'])
         logger.info("Initiate '%s' playbook to execute", playbook_name)
 
         logger.debug("Collected next params for ansible runner: %s", params_to_execute)
-        self._add_common_ansible_params(params_to_execute)
+        runner = self._execute_ansible_runner(params_to_execute)
 
-        # entry point of playbook execution
-        runner = ansible_runner.run(**params_to_execute)
         logger.info("Stats of '%s' playbook execution: %s", playbook_name, runner.stats)
-
         self._check_runner_execution(runner,
                                      host_pattern=params_to_execute['extravars'][ansible_const.HOST_PATTERN],
                                      executed_entity=playbook_name)

@@ -5,24 +5,22 @@ import asyncio
 import logging
 from typing import Optional
 
-import ansible_runner
 from ansible_runner import Runner
 
 from ansible.decorators import error_log_handler
-from ansible.executors.abstract_executor import AbstractAnsibleExecutor
+from ansible.executors.base_executor import BaseAnsibleExecutor
 
 logger = logging.getLogger('ansible_deploy')
 
 
-class AnsibleModuleExecutor(AbstractAnsibleExecutor):
+class AnsibleModuleExecutor(BaseAnsibleExecutor):
     """ Class is responsible for executing ad-hoc commands """
 
     def __init__(self, host_pattern: str, private_data_dir: str, verbosity: int):
         super().__init__(host_pattern=host_pattern, private_data_dir=private_data_dir, verbosity=verbosity)
 
     def _run_ad_hoc_command(self, params_to_execute: dict) -> Runner:
-        """
-        (Synchronously!)
+        """        (Synchronously!)
         Launches ansible runner with passed parameters as an `ad-hoc` command
 
         Args:
@@ -36,12 +34,9 @@ class AnsibleModuleExecutor(AbstractAnsibleExecutor):
         logger.info("Initiate '%s' module to execute", module_name)
 
         logger.debug("Collected next params for ansible runner: %s", params_to_execute)
-        self._add_common_ansible_params(params_to_execute)
+        runner = self._execute_ansible_runner(params_to_execute)
 
-        # entry point of module execution
-        runner = ansible_runner.run(**params_to_execute)
         logger.debug("Stats of '%s' module execution: %s", module_name, runner.stats)
-
         self._check_runner_execution(runner,
                                      host_pattern=params_to_execute['host_pattern'],
                                      executed_entity=module_name)
