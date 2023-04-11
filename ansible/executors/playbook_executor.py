@@ -6,7 +6,6 @@ import logging
 import os
 from pathlib import Path
 
-import ansible_runner
 from ansible_runner import Runner
 
 from ansible import ansible_const

@@ -5,7 +5,6 @@ import asyncio
 import logging
 from typing import Optional
 
-import ansible_runner
 from ansible_runner import Runner
 
 from ansible.decorators import error_log_handler
