@@ -5,7 +5,9 @@ import logging
 
 from ansible import AnsibleExecutor
 from deploy.deploy_const import DEVELOPMENT_MODE, PRODUCTION_MODE
-from deploy.jobs import *
+from deploy.jobs.connection import echo_host
+from deploy.jobs.preparatory import make_preparation, install_docker
+from deploy.jobs.service_lifting import configure_nginx
 from deploy.utils import create_directory
 from settings import config
 
