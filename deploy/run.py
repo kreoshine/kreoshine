@@ -5,7 +5,6 @@ import logging
 
 from ansible import AnsibleExecutor
 from deploy.deploy_const import DEVELOPMENT_MODE, PRODUCTION_MODE
-from deploy.jobs.connection import echo_host
 from deploy.jobs.preparatory import make_preparation, install_docker
 from deploy.jobs.service_lifting import configure_nginx
 from deploy.utils import create_directory
@@ -35,8 +34,6 @@ async def perform_deployment(deploy_mode: str, local_output_dir: str):
                                        private_data_dir=local_output_dir,
                                        verbosity=config.ansible.verbosity)
     logger.debug("Successfully initiate instance of '%s' class", AnsibleExecutor.__name__)
-
-    await echo_host(ansible=ansible_executor, need_gather_facts=deploy_mode == PRODUCTION_MODE)
 
     logger.debug("Preparing the project for deployment")
     await make_preparation(ansible=ansible_executor)

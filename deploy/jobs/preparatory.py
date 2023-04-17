@@ -6,12 +6,50 @@ import logging
 import os
 
 from ansible import AnsibleExecutor
+from ansible.exceptions import AnsibleExecuteError
+from deploy import utils
 from deploy.deploy_const import PROJECT_ROOT_PATH, PRODUCTION_MODE, DEVELOPMENT_MODE
+from deploy.jobs.connection import echo_host
 from settings import config, SETTINGS_ROOT_PATH
 
 logger = logging.getLogger('ansible_deploy')
 
 # pylint: disable = fixme
+
+
+async def ensure_ansible_communication(ansible: AnsibleExecutor):
+    """ Verifies that the ansible-runner inventory file is associated with the ssh key
+    If unable to reach host, initiates recreation of inventory file for ansible-runner
+    Note: this method should be used only for deployment in development mode!
+    """
+    private_key: str = str(PROJECT_ROOT_PATH.joinpath(".ssh/id_rsa"))
+
+    async def _create_runner_inventory_file():
+        """ Redefines localhost in runner-inventory file with exist and correct ssh-key """
+        inventory_file_content = f'{ansible.target_host_pattern} ' \
+                                 f'ansible_user=root ' \
+                                 f'ansible_ssh_private_key_file={private_key}'
+        inventory_creation_task = asyncio.create_task(
+            ansible.ansible_playbook.create_file(target_dir=directory_with_inventory_file,
+                                                 file_name=os.path.basename(ansible.runner_inventory_file),
+                                                 file_content=inventory_file_content))
+        await inventory_creation_task
+
+    directory_with_inventory_file = os.path.dirname(ansible.runner_inventory_file)
+    try:
+        if not os.path.isfile(ansible.runner_inventory_file):
+            utils.create_directory(directory_with_inventory_file)
+            await _create_runner_inventory_file()
+        await echo_host(ansible, need_gather_facts=False)
+
+    except AnsibleExecuteError as err:
+        logger.warning("Error during communication with %s", ansible.target_host_pattern)
+        if err.runner_rc == 4:  # most likely due to connection problem
+            logger.info("Recreating inventory file for ansible-runner (%s)", ansible.runner_inventory_file)
+            utils.clear_directory(target_dir=directory_with_inventory_file)
+            await _create_runner_inventory_file()
+        else:
+            raise
 
 
 async def make_preparation(ansible: AnsibleExecutor):
@@ -23,6 +61,9 @@ async def make_preparation(ansible: AnsibleExecutor):
     if deploy_mode == DEVELOPMENT_MODE:
         # make available absolute project path in deployment
         config.server.project_root_path = PROJECT_ROOT_PATH
+
+        logger.debug("Check connection for Ansible to '%s'", ansible.target_host_pattern)
+        await ensure_ansible_communication(ansible)
     # else: no need to define project directory for production — it should be used from configuration
 
     if deploy_mode == PRODUCTION_MODE:

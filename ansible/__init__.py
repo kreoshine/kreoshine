@@ -1,6 +1,8 @@
 """
 Package is responsible for executing ansible tasks via ansible-runner
 """
+import os
+
 from ansible.executors import AnsibleModuleExecutor, AnsiblePlaybookExecutor
 
 
@@ -12,9 +14,15 @@ class AnsibleExecutor:
     """
 
     def __init__(self, host_pattern: str, private_data_dir: str, verbosity: int):
+        self._private_data_dir = private_data_dir
         self._host_pattern = host_pattern
         self._module_executor = AnsibleModuleExecutor(host_pattern, private_data_dir, verbosity)
         self._playbook_executor = AnsiblePlaybookExecutor(host_pattern, private_data_dir, verbosity)
+
+    @property
+    def runner_inventory_file(self) -> str:
+        """ Default inventory file for ansible-runner """
+        return os.path.join(self._private_data_dir, 'inventory/hosts')
 
     @property
     def target_host_pattern(self) -> str:
