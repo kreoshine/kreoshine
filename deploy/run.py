@@ -1,31 +1,48 @@
 """
-Automatic deployment with Ansible and ansible-runner
+Package for deployment
 """
-import asyncio
-import os
+import logging
 
-from concurrent.futures import ThreadPoolExecutor
-
-from deploy import perform_deployment
-from deploy.deploy_const import PROJECT_ROOT_PATH
+from ansible import AnsibleExecutor
+from deploy.deploy_const import DEVELOPMENT_MODE, PRODUCTION_MODE
+from deploy.jobs.connection import echo_host
+from deploy.jobs.preparatory import make_preparation, install_docker
+from deploy.jobs.service_lifting import configure_nginx
+from deploy.utils import create_directory
 from settings import config
 
-
-def create_directory(dir_path: str):
-    """ Creates a directory on the path if it is not created """
-    try:
-        os.makedirs(dir_path)
-        print(f"Directory {dir_path} successfully created")
-    except FileExistsError:
-        print(f"Directory {dir_path} already exist")
+logger = logging.getLogger('ansible_deploy')
 
 
-if __name__ == '__main__':
-    tmp_directory = os.path.join(PROJECT_ROOT_PATH, 'tmp/')
-    create_directory(dir_path=tmp_directory)
+async def perform_deployment(deploy_mode: str, local_output_dir: str):
+    """
+    Deployment entry point
 
-    asyncio.new_event_loop().set_default_executor(ThreadPoolExecutor(max_workers=2))
-    asyncio.run(
-        perform_deployment(deploy_mode=config.deploy.mode,
-                           local_output_dir=tmp_directory)
-    )
+    Args:
+        deploy_mode: mode of deployment
+        local_output_dir: path to an existing local directory to be used:
+                              - as ansible-runner's private data directory
+    """
+    create_directory(local_output_dir)
+
+    assert deploy_mode in (PRODUCTION_MODE, DEVELOPMENT_MODE), \
+        f"Only two modes of deployment is allowed: '{DEVELOPMENT_MODE}' and '{PRODUCTION_MODE}'"
+
+    target_host = config.server.ip
+    logger.info("Initiate '%s' mode of deployment on '%s' host", deploy_mode, target_host)
+
+    ansible_executor = AnsibleExecutor(host_pattern=target_host,
+                                       private_data_dir=local_output_dir,
+                                       verbosity=config.ansible.verbosity)
+    logger.debug("Successfully initiate instance of '%s' class", AnsibleExecutor.__name__)
+
+    await echo_host(ansible=ansible_executor, need_gather_facts=deploy_mode == PRODUCTION_MODE)
+
+    logger.debug("Preparing the project for deployment")
+    await make_preparation(ansible=ansible_executor)
+
+    logger.debug("Docker installation")
+    await install_docker(ansible=ansible_executor)
+
+    logger.debug("Configure Nginx as a web-server")
+    await configure_nginx(ansible=ansible_executor)
