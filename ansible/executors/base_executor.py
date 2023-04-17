@@ -16,10 +16,11 @@ class BaseAnsibleExecutor:
     """
     Class contains logic for launching and analysing `runner` in synchronous way
     """
-    def __init__(self, host_pattern: str, private_data_dir: str, verbosity: int):
+    def __init__(self, host_pattern: str, private_data_dir: str, verbosity: int, ssh_key: str):
         self._host_pattern = host_pattern
         self._private_data_dir = private_data_dir
         self._verbosity = verbosity
+        self._ssh_key = ssh_key
 
     @property
     def host_pattern(self) -> str:
@@ -48,6 +49,8 @@ class BaseAnsibleExecutor:
         # directory where ansible artifacts will be stored
         params_to_execute['private_data_dir'] = self._private_data_dir
 
+        # params_to_execute['ssh_key'] = self._ssh_key
+
         runner = ansible_runner.run(**params_to_execute)
         return runner
 
@@ -63,6 +66,9 @@ class BaseAnsibleExecutor:
             AnsibleNoHostsMatched: when none of the hosts where processed
             AnsibleExecuteError: when error happened during execution
         """
+        if runner.rc == 1:
+            print('Erorr')
+            return
         if not runner.stats['processed']:
             logger.warning('None of the hosts were processed!')
             raise AnsibleNoHostsMatched(runner, host_pattern=host_pattern)

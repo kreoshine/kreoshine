@@ -16,8 +16,11 @@ logger = logging.getLogger('ansible_deploy')
 class AnsibleModuleExecutor(BaseAnsibleExecutor):
     """ Class is responsible for executing ad-hoc commands """
 
-    def __init__(self, host_pattern: str, private_data_dir: str, verbosity: int):
-        super().__init__(host_pattern=host_pattern, private_data_dir=private_data_dir, verbosity=verbosity)
+    def __init__(self, host_pattern: str, private_data_dir: str, verbosity: int, ssh_key):
+        super().__init__(host_pattern=host_pattern,
+                         private_data_dir=private_data_dir,
+                         verbosity=verbosity,
+                         ssh_key=ssh_key)
 
     def _run_ad_hoc_command(self, params_to_execute: dict) -> Runner:
         """        (Synchronously!)

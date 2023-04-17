@@ -1,6 +1,9 @@
 """
 Package is responsible for executing ansible tasks via ansible-runner
 """
+from pathlib import Path
+from typing import Optional
+
 from ansible.executors import AnsibleModuleExecutor, AnsiblePlaybookExecutor
 
 
@@ -11,10 +14,11 @@ class AnsibleExecutor:
         - playbook executor
     """
 
-    def __init__(self, host_pattern: str, private_data_dir: str, verbosity: int):
+    def __init__(self, host_pattern: str, private_data_dir: str, verbosity: int, ssh_key_file: Optional[str] = None):
         self._host_pattern = host_pattern
-        self._module_executor = AnsibleModuleExecutor(host_pattern, private_data_dir, verbosity)
-        self._playbook_executor = AnsiblePlaybookExecutor(host_pattern, private_data_dir, verbosity)
+        self._ssh_key = ssh_key_file if ssh_key_file else str(Path(__file__).parent.parent.joinpath('.ssh/id_rsa'))
+        self._module_executor = AnsibleModuleExecutor(host_pattern, private_data_dir, verbosity, self._ssh_key)
+        self._playbook_executor = AnsiblePlaybookExecutor(host_pattern, private_data_dir, verbosity, self._ssh_key)
 
     @property
     def target_host_pattern(self) -> str:

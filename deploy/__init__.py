@@ -15,7 +15,7 @@ logger = logging.getLogger('ansible_deploy')
 
 def configure_deploy_logging_locally(logger_file: str):
     """
-    Configures deploy logging file locally
+    Configures ansible-runner logging file locally
 
     Args:
         logger_file: path of the logger file (expected that directory to this file is already exist)
@@ -26,26 +26,25 @@ def configure_deploy_logging_locally(logger_file: str):
     logging.config.dictConfig(config=deploy_log_config)
 
 
-async def perform_deployment(deploy_mode: str, local_output_dir: str):
+async def perform_deployment(deploy_mode: str, runner_private_directory: str, local_output_dir: str):
     """
     Deployment entry point
 
     Args:
         deploy_mode: mode of deployment
-        local_output_dir: path to an existing local directory to be used:
-                              - for deployment log files
-                              - as ansible-runner's private data directory
+        runner_private_directory: ansible-runner's private data directory
+        local_output_dir: path to an existing local directory to be used for deployment log files
     """
-    configure_deploy_logging_locally(logger_file=os.path.join(local_output_dir, 'ansible-deploy.log'))
+    configure_deploy_logging_locally(logger_file=os.path.join(local_output_dir, 'ansible-ansible-runner.log'))
 
     assert deploy_mode in (PRODUCTION_MODE, DEVELOPMENT_MODE), \
         f"Only two modes of deployment is allowed: '{DEVELOPMENT_MODE}' and '{PRODUCTION_MODE}'"
 
-    target_host = config.server.ip
+    target_host = config.server.hostname
     logger.info("Initiate '%s' mode of deployment on '%s' host", deploy_mode, target_host)
 
     ansible_executor = AnsibleExecutor(host_pattern=target_host,
-                                       private_data_dir=local_output_dir,
+                                       private_data_dir=runner_private_directory,
                                        verbosity=config.ansible.verbosity)
     logger.debug("Successfully initiate instance of '%s' class", AnsibleExecutor.__name__)
 

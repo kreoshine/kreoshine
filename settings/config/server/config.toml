@@ -1,9 +1,11 @@
 [development.server]
 ip = "127.0.0.1"
+hostname = "localhost"
 project_root_path = ""
 
 [production.server]
 ip = "127.0.0.1"
+hostname = "localhost"
 project_root_path = "/home/admin/kreoshine"
 
 [production.server.admin]

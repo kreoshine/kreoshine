@@ -91,5 +91,11 @@ dmypy.json
 # temporary files
 /tmp
 
+# ssh keys for ansible
+/.ssh/
+
+# private data dir for ansible-runner
+deploy/ansible-runner
+
 # log-files
 *.log

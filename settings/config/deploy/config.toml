@@ -1,5 +1,7 @@
 [development.deploy]
 mode='development'
+local_sudo_passwd = ''
 
 [production.deploy]
 mode='production'
+local_sudo_passwd = ''
