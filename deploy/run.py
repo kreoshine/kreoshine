@@ -28,7 +28,7 @@ async def perform_deployment(deploy_mode: str, local_output_dir: str):
     assert deploy_mode in (PRODUCTION_MODE, DEVELOPMENT_MODE), \
         f"Only two modes of deployment is allowed: '{DEVELOPMENT_MODE}' and '{PRODUCTION_MODE}'"
 
-    target_host = config.server.ip
+    target_host = config.server.hostname
     logger.info("Initiate '%s' mode of deployment on '%s' host", deploy_mode, target_host)
 
     ansible_executor = AnsibleExecutor(host_pattern=target_host,
