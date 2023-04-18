@@ -52,9 +52,13 @@ class AnsiblePlaybookExecutor(BaseAnsibleExecutor, PermittedPlaybooksMixin):
         """
         assert 'playbook' in params_to_execute, "Argument 'playbook' must be defined for a ansible-playbook execution"
         playbook_name = os.path.basename(params_to_execute['playbook'])
-        logger.info("Initiate '%s' playbook to execute", playbook_name)
 
-        logger.debug("Collected next params for ansible runner: %s", params_to_execute)
+        logger.info("Initiate '%s' playbook to execute", playbook_name)
+        if not params_to_execute.get('extravars'):
+            params_to_execute['extravars'] = {}
+        params_to_execute['extravars'][ansible_const.HOST_PATTERN] = self.host_pattern,
+
+        logger.debug("Collected next params (most important) for ansible runner: %s", params_to_execute)
         runner = self._execute_ansible_runner(params_to_execute)
 
         logger.info("Stats of '%s' playbook execution: %s", playbook_name, runner.stats)
@@ -81,7 +85,6 @@ class AnsiblePlaybookExecutor(BaseAnsibleExecutor, PermittedPlaybooksMixin):
         params_to_execute = {
             'playbook': self.echo_playbook,
             'extravars': {
-                ansible_const.HOST_PATTERN: self.host_pattern,
                 ansible_const.NEED_GATHER_FACTS: need_gather_facts,
             }
         }
@@ -104,7 +107,6 @@ class AnsiblePlaybookExecutor(BaseAnsibleExecutor, PermittedPlaybooksMixin):
         params_to_execute = {
             'playbook': self.file_create_playbook,
             'extravars': {
-                ansible_const.HOST_PATTERN: self.host_pattern,
                 ansible_const.TARGET_DIR: str(target_dir),
                 ansible_const.FILE_NAME: str(file_name),
                 ansible_const.FILE_CONTENT: file_content
