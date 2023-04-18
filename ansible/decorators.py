@@ -5,20 +5,24 @@ import logging
 from functools import wraps
 from typing import Callable
 
-from ansible.exceptions import KnownAnsibleError
+from ansible.exceptions import KnownAnsibleError, AnsibleExecuteError
 
 logger = logging.getLogger('ansible_deploy')
 
 
 # pylint: disable = missing-return-doc
-def error_log_handler(_func: callable = None, *, trace_unexpected_error: bool = True) -> Callable:
+def error_log_handler(_func: callable = None, *,
+                      trace_unexpected_error: bool = True,
+                      refuse_execute_error_logging: bool = False) -> Callable:
     """ An error handling decorator for logging that can be used for asynchronous ansible executor methods
     Args:
         _func: parameter implemented to allow the decorator to be called without parameters
             Note: should never be used to pass an argument!
         trace_unexpected_error: neediness to trace unexpected error;
             if set to True, there is a traceback of unexpected exception for logging
-            Note: the parameter can only be used to pass a named argument!
+        refuse_execute_error_logging: neediness to log 'execute' error;
+
+    Notes: the parameters can only be used to pass named arguments!
     """
     def decorator(func: callable):
         @wraps(func)
@@ -29,6 +33,9 @@ def error_log_handler(_func: callable = None, *, trace_unexpected_error: bool = 
             except Exception as err:  # pylint: disable = broad-except
                 # pylint: disable = no-member
                 if isinstance(err, KnownAnsibleError):
+                    if isinstance(err, AnsibleExecuteError) and refuse_execute_error_logging:
+                        logger.warning("Error logging was rejected")
+                        raise
                     logger.error(err)
                     if err.error_output:
                         logger.error(err.error_output)

@@ -68,7 +68,7 @@ class BaseAnsibleExecutor:
             raise AnsibleNoHostsMatched(runner, host_pattern=host_pattern)
 
         if runner.rc != self.success_rc:
-            logger.error("Unsuccessful ansible result code [rc=%s}]", runner.rc)
+            logger.warning("Unsuccessful ansible result code [rc=%s}]", runner.rc)
             fatal_message = self.__get_fatal_output_message(runner)
 
             logger.debug("For more info see ansible artifact: %s", runner.config.artifact_dir)

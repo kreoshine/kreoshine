@@ -44,6 +44,23 @@ class AnsibleModuleExecutor(BaseAnsibleExecutor):
                                      executed_entity=module_name)
         return runner
 
+    @error_log_handler(refuse_execute_error_logging=True)
+    async def execute_command(self, command: str) -> None:
+        """ Executes shell' command
+        Args:
+            command: command to execute
+        Notes: this method will not log 'execute' errors!
+        """
+        module_name = 'ansible.builtin.command'
+        logger.debug("[%s] module", module_name)
+
+        params_to_execute = {
+            'module': module_name,
+            'module_args': command,
+        }
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, self._run_ad_hoc_command, params_to_execute)
+
     @error_log_handler
     async def update_file_line(self, file_path: str, string_to_replace: str, new_string: str) -> None:
         """

@@ -83,9 +83,13 @@ async def make_preparation(ansible: AnsibleExecutor):
 
 
 async def install_docker(ansible: AnsibleExecutor):
-    """ Installs Docker
+    """ Installs Docker if necessary
     Args:
         ansible: instance of ansible executor
-        """
-    # todo: install docker
-    logger.debug("Installation docker on %s host", ansible.target_host_pattern)
+    """
+    try:
+        docker_existence_task = ansible.ansible_module.execute_command(command='docker --version')
+        await docker_existence_task
+    except AnsibleExecuteError:
+        # todo: install docker
+        logger.debug("Installation docker on %s host", ansible.target_host_pattern)
