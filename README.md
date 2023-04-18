@@ -16,13 +16,16 @@ git checkout develop
 
 5. Create the virtual environment of Python of your choice
 (PIP is preferred as a package manager for Python packages: conda or just venv are the best choice)
-
 ```angular2html
 python -m venv venv
 ```
-6. Install deploy requirements (if you choose PIP, bellow command will help you)
+
+6. Install requirements (if you choose venv, bellow commands will help you)
 ```angular2html
-pip install -r deploy/pip-freeze.txt
+source venv/bin/activate
+```
+```angular2html
+pip install -r deploy/pip-freeze.txt -r backend/app/services/index/pip-freeze.txt
 ```
 
 7. Install collections for ansible
@@ -30,7 +33,30 @@ pip install -r deploy/pip-freeze.txt
 ansible-galaxy collection install -r ansible/requirements.yml
 ```
 
-8. **TODO**: make local deploy via Docker for index service (in Dockerfile or playbook, or else) :
-   1. install requirements for service
-   2. need copy of settings for service
-   3. make build with backend/app/services/index
+8. Create ssh keys for "root@localhost" to allow privilege escalation for Ansible:
+```angular2html
+mkdir .ssh/
+```
+```angular2html
+ssh-keygen -t rsa -b 4096 -C "root@localhost" -f .ssh/id_rsa
+```
+Keep passphrase empty!
+```angular2html
+ssh-copy-id -i .ssh/id_rsa root@localhost
+```
+If your root password is correct but fails,
+make sure to set `PermitRootLogin` to `yes` in sshd_config (/etc/ssh/sshd_config) 
+and try again after ```service ssh restart```
+
+On success way you'll see a message:
+```angular2html
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'root@localhost'"
+and check to make sure that only the key(s) you wanted were added.
+```
+
+9. Initiate deployment
+```angular2html
+python -m deploy
+```
