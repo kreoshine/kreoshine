@@ -5,7 +5,7 @@ import logging
 from functools import wraps
 from typing import Callable
 
-from ansible.exceptions import KnownAnsibleError, AnsibleExecuteError
+from ansible.exceptions import KnownAnsibleError, AnsibleExecuteError, IgnoredAnsibleFailure
 
 logger = logging.getLogger('ansible_deploy')
 
@@ -35,6 +35,9 @@ def error_log_handler(_func: callable = None, *,
                 if isinstance(err, KnownAnsibleError):
                     if isinstance(err, AnsibleExecuteError) and refuse_execute_error_logging:
                         logger.warning("Error logging was rejected")
+                        raise
+                    if isinstance(err, IgnoredAnsibleFailure):
+                        logger.debug("Expected failure occurred")
                         raise
                     logger.error(err)
                     if err.error_output:

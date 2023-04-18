@@ -29,6 +29,11 @@ class PermittedPlaybooksMixin:
         return os.path.join(self._playbook_location_dir, 'echo.yml')
 
     @property
+    def docker_installation_playbook(self) -> str:
+        """ Path of the 'docker installation' playbook """
+        return os.path.join(self._playbook_location_dir, 'docker_installation.yml')
+
+    @property
     def file_create_playbook(self) -> str:
         """ Path of the 'file_create' playbook """
         return os.path.join(self._playbook_location_dir, 'file_create.yml')
@@ -66,6 +71,20 @@ class AnsiblePlaybookExecutor(BaseAnsibleExecutor, PermittedPlaybooksMixin):
                                      host_pattern=params_to_execute['extravars'][ansible_const.HOST_PATTERN],
                                      executed_entity=playbook_name)
         return runner
+
+    @error_log_handler
+    async def install_docker(self) -> None:
+        """ Installs Docker
+        Notes: only 'Debian' 'os family' is supported!
+        """
+        playbook_name = os.path.basename(self.docker_installation_playbook)
+        logger.info("\n[%s] playbook", playbook_name)
+
+        params_to_execute = {
+            'playbook': self.docker_installation_playbook,
+        }
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, self._run_playbook, params_to_execute)
 
     @error_log_handler
     async def echo(self, need_gather_facts: bool) -> None:

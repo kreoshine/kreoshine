@@ -6,7 +6,7 @@ import logging
 import os
 
 from ansible import AnsibleExecutor
-from ansible.exceptions import AnsibleExecuteError
+from ansible.exceptions import AnsibleExecuteError, IgnoredAnsibleFailure
 from deploy import utils
 from deploy.deploy_const import PROJECT_ROOT_PATH, PRODUCTION_MODE, DEVELOPMENT_MODE
 from deploy.jobs.connection import echo_host
@@ -91,5 +91,10 @@ async def install_docker(ansible: AnsibleExecutor):
         docker_existence_task = ansible.ansible_module.execute_command(command='docker --version')
         await docker_existence_task
     except AnsibleExecuteError:
-        # todo: install docker
-        logger.debug("Installation docker on %s host", ansible.target_host_pattern)
+        logger.debug("Unable to find docker. Attempt to install it")
+        try:
+            logger.debug("Installation docker on %s host", ansible.target_host_pattern)
+            docker_installation_job = ansible.ansible_playbook.install_docker()
+            await docker_installation_job
+        except IgnoredAnsibleFailure:
+            raise RuntimeError("Unable to install Docker")

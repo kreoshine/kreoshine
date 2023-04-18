@@ -38,8 +38,13 @@ async def perform_deployment(deploy_mode: str, local_output_dir: str):
     logger.debug("Preparing the project for deployment")
     await make_preparation(ansible=ansible_executor)
 
-    logger.debug("Docker installation")
-    await install_docker(ansible=ansible_executor)
+    try:
+        logger.debug("Docker installation")
+        await install_docker(ansible=ansible_executor)
+    except RuntimeError as err:
+        logger.error(err)
+        logger.debug("Install Docker manually!")
+        return
 
     logger.debug("Configure Nginx as a web-server")
     await configure_nginx(ansible=ansible_executor)

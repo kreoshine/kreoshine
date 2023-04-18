@@ -7,7 +7,7 @@ from typing import List, Optional
 
 import ansible_runner
 from ansible_runner import Runner, AnsibleRunnerException
-from ansible.exceptions import AnsibleExecuteError, AnsibleNoHostsMatched
+from ansible.exceptions import AnsibleExecuteError, AnsibleNoHostsMatched, IgnoredAnsibleFailure
 
 logger = logging.getLogger('ansible_deploy')
 
@@ -62,6 +62,8 @@ class BaseAnsibleExecutor:
         Raises:
             AnsibleNoHostsMatched: when none of the hosts where processed
             AnsibleExecuteError: when error happened during execution
+            IgnoredAnsibleFailure: when expected error was occurred during execution;
+                e.g. "ignore_errors: True" in a task during playbook execution
         """
         if not runner.stats['processed']:
             logger.warning('None of the hosts were processed!')
@@ -74,6 +76,8 @@ class BaseAnsibleExecutor:
             logger.debug("For more info see ansible artifact: %s", runner.config.artifact_dir)
             raise AnsibleExecuteError(runner, host_pattern=host_pattern,
                                       ansible_entity_name=executed_entity, fatal_output=fatal_message)
+        if runner.stats['ignored']:
+            raise IgnoredAnsibleFailure(runner, err_msg="Expected failure has occurred")
 
     def __get_fatal_output_message(self, runner: Runner) -> Optional[str]:
         """
