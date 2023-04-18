@@ -71,7 +71,7 @@ async def make_preparation(ansible: AnsibleExecutor):
         admin_creation_task = asyncio.create_task(
             ansible.ansible_module.create_user(user_name=config.server.admin.user_name,
                                                privilege_escalation_group=config.server.admin.sudo_group))
-        await admin_creation_task  # fixme: need sudo permissions
+        await admin_creation_task
         # todo: clone repository to admin home dir
 
     logger.debug("Define '%s' environment for dynaconf: %s", deploy_mode, os.path.join(SETTINGS_ROOT_PATH, '.env'))
