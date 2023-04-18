@@ -31,9 +31,11 @@ class AnsibleModuleExecutor(BaseAnsibleExecutor):
         """
         assert 'module' in params_to_execute, "Argument 'module' must be defined for an ad-hoc command execution"
         module_name = params_to_execute['module']
-        logger.info("Initiate '%s' module to execute", module_name)
 
-        logger.debug("Collected next params for ansible runner: %s", params_to_execute)
+        logger.info("Initiate '%s' module to execute", module_name)
+        params_to_execute['host_pattern'] = self.host_pattern
+
+        logger.debug("Collected next params (most important) for ansible runner: %s", params_to_execute)
         runner = self._execute_ansible_runner(params_to_execute)
 
         logger.debug("Stats of '%s' module execution: %s", module_name, runner.stats)
@@ -56,7 +58,6 @@ class AnsibleModuleExecutor(BaseAnsibleExecutor):
         logger.info("\n[%s] task", module_name)
 
         params_to_execute = {
-            'host_pattern': self.host_pattern,
             'module': module_name,
             'module_args': f"path={str(file_path)}"
                            f"regexp='^{string_to_replace}'"
@@ -88,7 +89,6 @@ class AnsibleModuleExecutor(BaseAnsibleExecutor):
                           f"shell='/bin/bash'"
 
         params_to_execute = {
-            'host_pattern': self.host_pattern,
             'module': module_name,
             'module_args': module_args
         }
