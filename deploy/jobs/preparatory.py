@@ -87,11 +87,14 @@ async def install_docker(ansible: AnsibleExecutor):
     Args:
         ansible: instance of ansible executor
     """
+    command_to_check_docker = 'docker --version'
     try:
-        docker_existence_task = ansible.ansible_module.execute_command(command='docker --version')
+        logger.debug("Check Docker existence")
+        docker_existence_task = ansible.ansible_module.execute_command(command=command_to_check_docker)
         await docker_existence_task
+        logger.info("Docker already exist — no need for installation")
     except AnsibleExecuteError:
-        logger.debug("Unable to find docker. Attempt to install it")
+        logger.debug("Unable to execute command '%s' — trying to install it", command_to_check_docker)
         try:
             logger.debug("Installation docker on %s host", ansible.target_host_pattern)
             docker_installation_job = ansible.ansible_playbook.install_docker()

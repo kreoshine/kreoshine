@@ -66,7 +66,7 @@ class AnsiblePlaybookExecutor(BaseAnsibleExecutor, PermittedPlaybooksMixin):
         logger.debug("Collected next params (most important) for ansible runner: %s", params_to_execute)
         runner = self._execute_ansible_runner(params_to_execute)
 
-        logger.info("Stats of '%s' playbook execution: %s", playbook_name, runner.stats)
+        logger.debug("Stats of '%s' playbook execution: %s", playbook_name, runner.stats)
         self._check_runner_execution(runner,
                                      host_pattern=params_to_execute['extravars'][ansible_const.HOST_PATTERN],
                                      executed_entity=playbook_name)

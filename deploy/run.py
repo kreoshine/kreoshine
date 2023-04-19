@@ -28,23 +28,23 @@ async def perform_deployment(deploy_mode: str, local_output_dir: str):
         f"Only two modes of deployment is allowed: '{DEVELOPMENT_MODE}' and '{PRODUCTION_MODE}'"
 
     target_host = config.server.hostname
-    logger.info("Initiate '%s' mode of deployment on '%s' host", deploy_mode, target_host)
+    logger.debug("Initiate '%s' mode of deployment on '%s' host", deploy_mode, target_host)
 
     ansible_executor = AnsibleExecutor(host_pattern=target_host,
                                        private_data_dir=local_output_dir,
                                        verbosity=config.ansible.verbosity)
     logger.debug("Successfully initiate instance of '%s' class", AnsibleExecutor.__name__)
 
-    logger.debug("Preparing the project for deployment")
+    logger.info("Preparing the project for deployment")
     await make_preparation(ansible=ansible_executor)
 
     try:
-        logger.debug("Docker installation")
+        logger.info("Docker installation")
         await install_docker(ansible=ansible_executor)
     except RuntimeError as err:
         logger.error(err)
-        logger.debug("Install Docker manually!")
+        logger.critical("Install Docker manually for deployment possibility!")
         return
 
-    logger.debug("Configure Nginx as a web-server")
+    logger.info("Configure Nginx as a web-server")
     await configure_nginx(ansible=ansible_executor)
