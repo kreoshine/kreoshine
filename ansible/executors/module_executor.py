@@ -51,11 +51,8 @@ class AnsibleModuleExecutor(BaseAnsibleExecutor):
             command: command to execute
         Notes: this method will not log 'execute' errors!
         """
-        module_name = 'ansible.builtin.command'
-        logger.debug("[%s] module", module_name)
-
         params_to_execute = {
-            'module': module_name,
+            'module': 'ansible.builtin.command',
             'module_args': command,
         }
         loop = asyncio.get_event_loop()
@@ -71,11 +68,8 @@ class AnsibleModuleExecutor(BaseAnsibleExecutor):
             string_to_replace: string to be replaced
             new_string: string to be inserted
         """
-        module_name = 'ansible.builtin.lineinfile'
-        logger.info("\n[%s] task", module_name)
-
         params_to_execute = {
-            'module': module_name,
+            'module': 'ansible.builtin.lineinfile',
             'module_args': f"path={str(file_path)}"
                            f"regexp='^{string_to_replace}'"
                            f"line={new_string}"
@@ -93,9 +87,6 @@ class AnsibleModuleExecutor(BaseAnsibleExecutor):
             user_name: name of the user to create
             privilege_escalation_group: 'sudo' group that will be added for user, optional
         """
-        module_name = "ansible.builtin.user"
-        logger.info("\n[%s] task", module_name)
-
         if privilege_escalation_group:
             module_args = f"name={user_name} " \
                           f"shell='/bin/bash' " \
@@ -106,7 +97,7 @@ class AnsibleModuleExecutor(BaseAnsibleExecutor):
                           f"shell='/bin/bash'"
 
         params_to_execute = {
-            'module': module_name,
+            'module': "ansible.builtin.user",
             'module_args': module_args
         }
         loop = asyncio.get_event_loop()

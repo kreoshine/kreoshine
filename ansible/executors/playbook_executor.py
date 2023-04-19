@@ -77,9 +77,6 @@ class AnsiblePlaybookExecutor(BaseAnsibleExecutor, PermittedPlaybooksMixin):
         """ Installs Docker
         Notes: only 'Debian' 'os family' is supported!
         """
-        playbook_name = os.path.basename(self.docker_installation_playbook)
-        logger.info("\n[%s] playbook", playbook_name)
-
         params_to_execute = {
             'playbook': self.docker_installation_playbook,
         }
@@ -98,9 +95,6 @@ class AnsiblePlaybookExecutor(BaseAnsibleExecutor, PermittedPlaybooksMixin):
         Raises:
             AnsibleExecuteError: if there was mistake during communication to the target host
         """
-        playbook_name = os.path.basename(self.echo_playbook)
-        logger.info("\n[%s] playbook", playbook_name)
-
         params_to_execute = {
             'playbook': self.echo_playbook,
             'extravars': {
@@ -120,9 +114,6 @@ class AnsiblePlaybookExecutor(BaseAnsibleExecutor, PermittedPlaybooksMixin):
             file_name: basename of creating file
             file_content: content to be added for file
         """
-        playbook_name = os.path.basename(self.file_create_playbook)
-        logger.info("\n[%s] task", playbook_name)
-
         params_to_execute = {
             'playbook': self.file_create_playbook,
             'extravars': {
