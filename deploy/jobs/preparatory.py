@@ -86,6 +86,8 @@ async def install_docker(ansible: AnsibleExecutor):
     """ Installs Docker if necessary
     Args:
         ansible: instance of ansible executor
+    Raises:
+        RuntimeError: when unable to install Docker
     """
     command_to_check_docker = 'docker --version'
     try:
@@ -99,5 +101,5 @@ async def install_docker(ansible: AnsibleExecutor):
             logger.debug("Installation docker on %s host", ansible.target_host_pattern)
             docker_installation_job = ansible.ansible_playbook.install_docker()
             await docker_installation_job
-        except IgnoredAnsibleFailure:
-            raise RuntimeError("Unable to install Docker")
+        except IgnoredAnsibleFailure as err:
+            raise RuntimeError("Unable to install Docker") from err
