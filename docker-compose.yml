@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  psql:
+    image: postgres:15
+    command: postgres -c config_file=/postgresql.conf
+    environment:
+      PGDATA: postgresql
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: tr134sdfWE
+      POSTGRES_DB: "postgres_ql"
+      DB_USER: usr
+      DB_PASSWORD: 1234
+      DB_NAME: postgres_ql
+    volumes:
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ./postgresql.conf:/postgresql.conf
+    ports:
+      - '5432:5432'
+    logging:
+      options:
+        max-size: '50m'
