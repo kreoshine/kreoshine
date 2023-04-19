@@ -91,5 +91,8 @@ dmypy.json
 # temporary files
 /tmp
 
+# ssh keys
+/.ssh/
+
 # log-files
 *.log
