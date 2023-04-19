@@ -35,9 +35,11 @@ def error_log_handler(_func: callable = None, *,
                 if isinstance(err, KnownAnsibleError):
                     if isinstance(err, AnsibleExecuteError) and refuse_execute_error_logging:
                         logger.warning("Error logging was rejected")
+                        logger.debug(err.info)
                         raise
                     if isinstance(err, IgnoredAnsibleFailure):
-                        logger.debug("Expected failure occurred")
+                        logger.warning("Expected failure occurred")
+                        logger.debug(err.info)
                         raise
                     logger.error(err)
                     if err.error_output:

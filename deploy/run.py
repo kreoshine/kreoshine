@@ -41,8 +41,7 @@ async def perform_deployment(deploy_mode: str, local_output_dir: str):
     try:
         logger.info("Docker installation")
         await install_docker(ansible=ansible_executor)
-    except RuntimeError as err:
-        logger.error(err)
+    except RuntimeError:
         logger.critical("Install Docker manually for deployment possibility!")
         return
 
