@@ -3,17 +3,15 @@ Module with decorators for ansible
 """
 import logging
 from functools import wraps
-from typing import Callable
 
 from ansible.exceptions import KnownAnsibleError, AnsibleExecuteError, IgnoredAnsibleFailure
 
 logger = logging.getLogger('ansible_deploy')
 
 
-# pylint: disable = missing-return-doc
 def error_log_handler(_func: callable = None, *,
                       trace_unexpected_error: bool = True,
-                      refuse_execute_error_logging: bool = False) -> Callable:
+                      refuse_execute_error_logging: bool = False) -> callable:
     """ An error handling decorator for logging that can be used for asynchronous ansible executor methods
     Args:
         _func: parameter implemented to allow the decorator to be called without parameters
@@ -21,8 +19,9 @@ def error_log_handler(_func: callable = None, *,
         trace_unexpected_error: neediness to trace unexpected error;
             if set to True, there is a traceback of unexpected exception for logging
         refuse_execute_error_logging: neediness to log 'execute' error;
-
     Notes: the parameters can only be used to pass named arguments!
+    Returns:
+        wrapper for logging
     """
     def decorator(func: callable):
         @wraps(func)
