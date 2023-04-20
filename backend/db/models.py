@@ -110,7 +110,7 @@ class News(Base):
     """
     __tablename__ = "news"
     id: Mapped[int] = mapped_column(primary_key=True)
-    heder: Mapped[str] = mapped_column(nullable=False)
+    header: Mapped[str] = mapped_column(nullable=False)
     body: Mapped[str] = mapped_column(nullable=False)
     status: Mapped[int] = mapped_column(
         ForeignKey("visible_status.id"), default=2)

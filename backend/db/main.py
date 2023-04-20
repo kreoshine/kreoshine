@@ -27,12 +27,12 @@ async def insert_objects(async_session: async_sessionmaker[AsyncSession]) -> Non
             session.add_all(
                 [
                     # 1--------------------------
-                    # VisibleStatus(name="visible"),
-                    # VisibleStatus(name="invisible"),
-                    # CardStatus(name="received"),
-                    # CardStatus(name="discussed"),
-                    # CardStatus(name="in progress"),
-                    # CardStatus(name="closed"),
+                    VisibleStatus(name="visible"),
+                    VisibleStatus(name="invisible"),
+                    CardStatus(name="received"),
+                    CardStatus(name="discussed"),
+                    CardStatus(name="in progress"),
+                    CardStatus(name="closed"),
                     # 2--------------------------
                     # Service(name="Объемные световые буквы",
                     #         description="Объемные световые буквы", status=2,
