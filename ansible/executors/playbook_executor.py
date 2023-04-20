@@ -5,6 +5,7 @@ import asyncio
 import logging
 import os
 from pathlib import Path
+from typing import List
 
 from ansible_runner import Runner
 
@@ -32,6 +33,11 @@ class PermittedPlaybooksMixin:
     def docker_installation_playbook(self) -> str:
         """ Path of the 'docker installation' playbook """
         return os.path.join(self._playbook_location_dir, 'docker_installation.yml')
+
+    @property
+    def load_docker_images_playbook(self) -> str:
+        """ Path of the 'load docker images' playbook """
+        return os.path.join(self._playbook_location_dir, 'load_docker_images.yml')
 
     @property
     def file_create_playbook(self) -> str:
@@ -120,6 +126,20 @@ class AnsiblePlaybookExecutor(BaseAnsibleExecutor, PermittedPlaybooksMixin):
                 ansible_const.TARGET_DIR: str(target_dir),
                 ansible_const.FILE_NAME: str(file_name),
                 ansible_const.FILE_CONTENT: file_content
+            }
+        }
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, self._run_playbook, params_to_execute)
+
+    async def load_docker_images(self, image_names: List[str]):
+        """ Loads docker images
+        Args
+            images: list of names of images to load
+        """
+        params_to_execute = {
+            'playbook': self.load_docker_images_playbook,
+            'extravars': {
+                ansible_const.IMAGE_NAMES: image_names,
             }
         }
         loop = asyncio.get_event_loop()

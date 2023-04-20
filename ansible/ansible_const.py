@@ -11,3 +11,6 @@ NEW_STRING = 'new_string'
 TARGET_DIR = 'target_dir'
 FILE_NAME = 'file_name'
 FILE_CONTENT = 'file_content'
+
+# Docker constant
+IMAGE_NAMES = 'image_names'

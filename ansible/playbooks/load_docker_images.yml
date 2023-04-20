@@ -1,0 +1,16 @@
+---
+- name: Pulling images
+  hosts: "{{ host_pattern }}"
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Pull an image
+      community.docker.docker_image:
+        name: "{{ image_name }}"
+        source: pull
+        pull:
+          platform: amd64
+      loop: '{{ image_names }}'
+      loop_control:
+        loop_var: image_name
