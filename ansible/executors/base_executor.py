@@ -2,11 +2,14 @@
 Module contain abstract ansible executor as a base helper class
 """
 import logging
+import os
 
 from typing import List, Optional
 
 import ansible_runner
 from ansible_runner import Runner, AnsibleRunnerException
+
+from ansible import ansible_const
 from ansible.exceptions import AnsibleExecuteError, AnsibleNoHostsMatched, IgnoredAnsibleFailure
 
 logger = logging.getLogger('ansible_deploy')
@@ -49,6 +52,33 @@ class BaseAnsibleExecutor:
         params_to_execute['private_data_dir'] = self._private_data_dir
 
         runner = ansible_runner.run(**params_to_execute)
+        return runner
+
+    def _run_playbook(self, params_to_execute: dict) -> Runner:
+        """        (Synchronously!)
+        Launches ansible runner with passed parameters as an `ansible-playbook` command
+
+        Args:
+            params_to_execute: parameters to be used to launch runner
+
+        Returns:
+            ansible runner object after execution
+        """
+        assert 'playbook' in params_to_execute, "Argument 'playbook' must be defined for a ansible-playbook execution"
+        playbook_name = os.path.basename(params_to_execute['playbook'])
+
+        logger.info("Initiate '%s' playbook to execute", playbook_name)
+        if not params_to_execute.get('extravars'):
+            params_to_execute['extravars'] = {}
+        params_to_execute['extravars'][ansible_const.HOST_PATTERN] = self.host_pattern
+
+        logger.debug("Collected next params (most important) for ansible runner: %s", params_to_execute)
+        runner = self._execute_ansible_runner(params_to_execute)
+
+        logger.debug("Stats of '%s' playbook execution: %s", playbook_name, runner.stats)
+        self._check_runner_execution(runner,
+                                     host_pattern=params_to_execute['extravars'][ansible_const.HOST_PATTERN],
+                                     executed_entity=playbook_name)
         return runner
 
     def _check_runner_execution(self, runner: Runner, host_pattern: str, executed_entity: str) -> None:

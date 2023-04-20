@@ -1,0 +1,5 @@
+---
+- block:
+  - name: just print a message to stdout
+    debug:
+      msg: "hello from the ansible-runner testrole!"

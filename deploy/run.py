@@ -6,7 +6,7 @@ import logging
 from ansible import AnsibleExecutor
 from deploy.deploy_const import DEVELOPMENT_MODE, PRODUCTION_MODE
 from deploy.jobs.preparatory import make_preparation, install_docker, load_default_images
-from deploy.jobs.service_lifting import configure_nginx
+from deploy.jobs.service_lifting import init_nginx_container
 from deploy.utils import create_directory
 from settings import config
 
@@ -46,5 +46,5 @@ async def perform_deployment(deploy_mode: str, local_output_dir: str):
         return
     await load_default_images(ansible=ansible_executor)
 
-    logger.info("Configure Nginx as a web-server")
-    await configure_nginx(ansible=ansible_executor)
+    logger.debug("Configure Nginx as a web-server in a container")
+    await init_nginx_container(ansible=ansible_executor)

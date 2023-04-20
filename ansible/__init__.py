@@ -4,6 +4,7 @@ Package is responsible for executing ansible tasks via ansible-runner
 import os
 
 from ansible.executors import AnsibleModuleExecutor, AnsiblePlaybookExecutor
+from ansible.executors.role_executor import AnsibleRoleExecutor
 
 
 class AnsibleExecutor:
@@ -18,6 +19,7 @@ class AnsibleExecutor:
         self._host_pattern = host_pattern
         self._module_executor = AnsibleModuleExecutor(host_pattern, private_data_dir, verbosity)
         self._playbook_executor = AnsiblePlaybookExecutor(host_pattern, private_data_dir, verbosity)
+        self._role_executor = AnsibleRoleExecutor(host_pattern, private_data_dir, verbosity)
 
     @property
     def runner_inventory_file(self) -> str:
@@ -38,3 +40,8 @@ class AnsibleExecutor:
     def ansible_playbook(self) -> AnsiblePlaybookExecutor:
         """ Executes ansible playbooks """
         return self._playbook_executor
+
+    @property
+    def ansible_roles(self) -> AnsibleRoleExecutor:
+        """ Executes ansible roles """
+        return self._role_executor
