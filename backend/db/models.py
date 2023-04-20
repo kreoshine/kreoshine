@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import asyncio
+import asyncpg
+
 import datetime
 from typing import List
 
