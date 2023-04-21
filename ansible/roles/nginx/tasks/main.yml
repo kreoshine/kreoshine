@@ -41,6 +41,6 @@
 - name: Copy index.html as main page
   community.docker.docker_container_copy_into:
     container: '{{ nginx_container_name }}'
-    path: '{{ static_root_local_path }}/index.html'
+    path: '{{ local_root_to_static }}/index.html'
     container_path: '{{ root_path_for_main }}/index.html'
   notify: reload nginx
