@@ -1,5 +1,7 @@
 ---
-- hosts: "{{ host_pattern }}"
+- name: Configuring Nginx
+  hosts: "{{ host_pattern }}"
   gather_facts: false
+  become: true
   roles:
     - nginx

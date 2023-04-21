@@ -10,6 +10,7 @@ from ansible_runner import Runner
 
 from ansible import ansible_const
 from ansible.executors.base_executor import BaseAnsibleExecutor
+from deploy.deploy_const import PROJECT_ROOT_PATH
 
 logger = logging.getLogger('ansible_deploy')
 
@@ -62,10 +63,11 @@ class AnsibleRoleExecutor(BaseAnsibleExecutor):
             - TODO
 
         """
-
         params_to_execute = {
             'playbook': self.nginx_role_playbook,
+            'extravars': {
+                ansible_const.STATIC_ROOT_PATH: str(PROJECT_ROOT_PATH.joinpath('frontend')),
+            }
         }
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(None, self._run_role, params_to_execute)
-

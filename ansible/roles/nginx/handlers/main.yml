@@ -1,0 +1,9 @@
+---
+# handlers file for nginx
+- name: reload nginx
+  community.docker.docker_container_exec:
+    container: '{{ nginx_container_name }}'
+    argv:
+      - /bin/bash
+      - "-c"
+      - "service nginx reload"
