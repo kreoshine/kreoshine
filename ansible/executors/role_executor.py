@@ -50,15 +50,18 @@ class AnsibleRoleExecutor(BaseAnsibleExecutor):
         self._check_runner_execution(runner, executed_entity=f'{role_name} role')
         return runner
 
-    async def execute_nginx_role(self, local_root_to_static: str):
+    async def execute_nginx_role(self, local_root_to_static: str, relative_dir_to_copy: str):
         """ Executes nginx role:
             - TODO
-
+        Args:
+            local_root_to_static: local path to directory with static files
+            relative_dir_to_copy: directory in `local_root_to_static` which should be fully copied
         """
         params_to_execute = {
             'playbook': self.nginx_role_playbook,
             'extravars': {
                 ansible_const.LOCAL_ROOT_TO_STATIC: local_root_to_static,
+                ansible_const.LOCAL_SOURCE_DIR: str(os.path.join(local_root_to_static, relative_dir_to_copy))
             }
         }
         loop = asyncio.get_event_loop()
