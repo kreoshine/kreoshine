@@ -42,20 +42,13 @@ class AnsibleRoleExecutor(BaseAnsibleExecutor):
             ansible runner object after execution
         """
         assert 'playbook' in params_to_execute, "Argument 'playbook' must be defined as entry point for role execution"
-        playbook_name = os.path.basename(params_to_execute['playbook']).split('.')[0]
+        role_name = os.path.basename(params_to_execute['playbook']).split('.')[0]
 
-        logger.info("Initiate '%s' role to execute", playbook_name)
-        if not params_to_execute.get('extravars'):
-            params_to_execute['extravars'] = {}
-        params_to_execute['extravars'][ansible_const.HOST_PATTERN] = self.host_pattern
-
-        logger.debug("Collected next params (most important) for ansible runner: %s", params_to_execute)
+        logger.info("Initiate '%s' role to execute", role_name)
         runner = self._execute_ansible_runner(params_to_execute)
 
-        logger.debug("Stats of '%s' role execution: %s", playbook_name, runner.stats)
-        self._check_runner_execution(runner,
-                                     host_pattern=self.host_pattern,
-                                     executed_entity='{} role'.format(playbook_name))
+        logger.debug("Stats of '%s' role execution: %s", role_name, runner.stats)
+        self._check_runner_execution(runner, executed_entity=f'{role_name} role')
         return runner
 
     async def execute_nginx_role(self):

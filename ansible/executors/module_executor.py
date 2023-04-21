@@ -33,15 +33,10 @@ class AnsibleModuleExecutor(BaseAnsibleExecutor):
         module_name = params_to_execute['module']
 
         logger.info("Initiate '%s' module to execute", module_name)
-        params_to_execute['host_pattern'] = self.host_pattern
-
-        logger.debug("Collected next params (most important) for ansible runner: %s", params_to_execute)
         runner = self._execute_ansible_runner(params_to_execute)
 
         logger.debug("Stats of '%s' module execution: %s", module_name, runner.stats)
-        self._check_runner_execution(runner,
-                                     host_pattern=params_to_execute['host_pattern'],
-                                     executed_entity=module_name)
+        self._check_runner_execution(runner, executed_entity=f'{module_name} module')
         return runner
 
     @error_log_handler(refuse_execute_error_logging=True)
