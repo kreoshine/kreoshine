@@ -44,3 +44,8 @@
     path: '{{ local_root_to_static }}/index.html'
     container_path: '{{ root_path_for_main }}/index.html'
   notify: reload nginx
+
+- name: Copy '{{ local_source_dir }}' directory as source files
+  ansible.builtin.shell:
+    cmd: "docker cp {{ local_source_dir }} {{ nginx_container_name }}:{{ root_path_for_main }}/src"
+  notify: reload nginx
