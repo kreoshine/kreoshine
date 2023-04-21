@@ -10,7 +10,6 @@ from ansible_runner import Runner
 
 from ansible import ansible_const
 from ansible.executors.base_executor import BaseAnsibleExecutor
-from deploy.deploy_const import PROJECT_ROOT_PATH
 
 logger = logging.getLogger('ansible_deploy')
 
@@ -51,7 +50,7 @@ class AnsibleRoleExecutor(BaseAnsibleExecutor):
         self._check_runner_execution(runner, executed_entity=f'{role_name} role')
         return runner
 
-    async def execute_nginx_role(self):
+    async def execute_nginx_role(self, local_root_to_static: str):
         """ Executes nginx role:
             - TODO
 
@@ -59,7 +58,7 @@ class AnsibleRoleExecutor(BaseAnsibleExecutor):
         params_to_execute = {
             'playbook': self.nginx_role_playbook,
             'extravars': {
-                ansible_const.STATIC_ROOT_PATH: str(PROJECT_ROOT_PATH.joinpath('frontend')),
+                ansible_const.LOCAL_ROOT_TO_STATIC: local_root_to_static,
             }
         }
         loop = asyncio.get_event_loop()
