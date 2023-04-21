@@ -16,6 +16,8 @@ async def init_nginx_container(ansible: AnsibleExecutor) -> None:
     """
     logger.debug("Nginx configuration on a %s host", ansible.target_host_pattern)
     nginx_initialization_task = ansible.ansible_roles.execute_nginx_role(
-        local_root_to_static=str(PROJECT_ROOT_PATH.joinpath('frontend/')))
+        local_root_to_static=str(PROJECT_ROOT_PATH.joinpath('frontend/app/main')),
+        relative_dir_to_copy='src'
+    )
     await nginx_initialization_task
     logger.info("Successfully create nginx container")
