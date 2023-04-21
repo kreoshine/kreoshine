@@ -25,7 +25,7 @@ python -m venv venv
 source venv/bin/activate
 ```
 ```angular2html
-pip install -r deploy/pip-freeze.txt -r backend/app/services/index/pip-freeze.txt
+pip install -r deploy/pip-freeze.txt -r backend/app/services/index/pip-freeze.txt -r ansible/requirements.txt
 ```
 
 7. Install collections for ansible

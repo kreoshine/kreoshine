@@ -103,3 +103,16 @@ async def install_docker(ansible: AnsibleExecutor):
             await docker_installation_job
         except IgnoredAnsibleFailure as err:
             raise RuntimeError("Unable to install Docker") from err
+
+
+async def load_default_images(ansible: AnsibleExecutor):
+    """ Loads default Docker images
+    Args:
+        ansible: instance of ansible executor
+    """
+    logger.debug("Install default images")
+    default_images = ['nginx']
+    images_load_task = ansible.ansible_playbook.load_docker_images(image_names=default_images)
+    await images_load_task
+    for image_name in default_images:
+        logger.info("Image %s successfully installed (or already exist)", image_name)

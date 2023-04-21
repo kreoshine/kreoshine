@@ -7,6 +7,8 @@ from typing import List, Optional
 
 import ansible_runner
 from ansible_runner import Runner, AnsibleRunnerException
+
+from ansible import ansible_const
 from ansible.exceptions import AnsibleExecuteError, AnsibleNoHostsMatched, IgnoredAnsibleFailure
 
 logger = logging.getLogger('ansible_deploy')
@@ -31,17 +33,22 @@ class BaseAnsibleExecutor:
         """ Successful result of ansible task execution """
         return 0
 
-    def _execute_ansible_runner(self, params_to_execute: dict) -> Runner:
+    def _execute_ansible_runner(self, params_to_execute: dict, need_to_set_host_pattern: bool = True) -> Runner:
         """        (Synchronously!)
         Entry point for ansible-runner execution
 
-        Sets several params (such as verbosity and 'private data dir') before execution
+        Sets several params (such as `verbosity` and `private data dir` and so on) before execution
 
         Args:
             params_to_execute: params for ansible-runner (for more info see `ansible-runner/interface.py`)
+            need_to_set_host_pattern: boolean reflecting the need to set the host template, by default True
         Returns:
             ansible runner object after execution
         """
+        if need_to_set_host_pattern:
+            self._set_target_host_pattern(params_to_execute)
+
+        logger.debug("Collected next params (most important) for ansible runner: %s", params_to_execute)
         # set ansible verbosity level
         params_to_execute['verbosity'] = self._verbosity
 
@@ -51,13 +58,21 @@ class BaseAnsibleExecutor:
         runner = ansible_runner.run(**params_to_execute)
         return runner
 
-    def _check_runner_execution(self, runner: Runner, host_pattern: str, executed_entity: str) -> None:
+    def _set_target_host_pattern(self, params_to_execute: dict) -> None:
+        """ Sets target host pattern in params for runner execution """
+        if params_to_execute.get('module'):
+            params_to_execute['host_pattern'] = self.host_pattern
+            return
+        if not params_to_execute.get('extravars'):
+            params_to_execute['extravars'] = {}
+        params_to_execute['extravars'][ansible_const.HOST_PATTERN] = self.host_pattern
+
+    def _check_runner_execution(self, runner: Runner, executed_entity: str) -> None:
         """
         Checks runner execution
 
         Args:
             runner: runner object gotten after execution
-            host_pattern: hostname pattern that has been using for ansible execution (e.g. hostname)
             executed_entity: entity that was executed (e.g. playbook, module)
         Raises:
             AnsibleNoHostsMatched: when none of the hosts where processed
@@ -67,14 +82,14 @@ class BaseAnsibleExecutor:
         """
         if not runner.stats['processed']:
             logger.warning('None of the hosts were processed!')
-            raise AnsibleNoHostsMatched(runner, host_pattern=host_pattern)
+            raise AnsibleNoHostsMatched(runner, host_pattern=self.host_pattern)
 
         if runner.rc != self.success_rc:
             logger.warning("Unsuccessful ansible result code [rc=%s}]", runner.rc)
             fatal_message = self.__get_fatal_output_message(runner)
 
             logger.debug("For more info see ansible artifact: %s", runner.config.artifact_dir)
-            raise AnsibleExecuteError(runner, host_pattern=host_pattern,
+            raise AnsibleExecuteError(runner, host_pattern=self.host_pattern,
                                       ansible_entity_name=executed_entity, fatal_output=fatal_message)
         if runner.stats['ignored']:
             raise IgnoredAnsibleFailure(runner, err_msg="Expected failure has occurred")
