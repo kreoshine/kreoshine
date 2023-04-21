@@ -16,4 +16,4 @@ FILE_CONTENT = 'file_content'
 IMAGE_NAMES = 'image_names'
 
 # Nginx role template constant
-STATIC_ROOT_PATH = 'static_root_local_path'
+LOCAL_ROOT_TO_STATIC = 'local_root_to_static'
