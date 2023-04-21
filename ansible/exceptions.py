@@ -46,3 +46,12 @@ class AnsibleExecuteError(KnownAnsibleError):
                          err_msg=f"Ansible execution error of '{ansible_entity_name}' "
                                  f"(host pattern: '{host_pattern}'). \n",
                          error_output=fatal_output if fatal_output else runner.stdout.read())
+
+
+class IgnoredAnsibleFailure(KnownAnsibleError):
+    """
+    Class of the exception that may be raised when errors where ignored during execution
+    """
+
+    def __init__(self, runner: Runner, err_msg: str):
+        super().__init__(runner, err_msg=err_msg)

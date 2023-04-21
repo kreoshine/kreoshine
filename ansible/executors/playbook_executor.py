@@ -29,6 +29,11 @@ class PermittedPlaybooksMixin:
         return os.path.join(self._playbook_location_dir, 'echo.yml')
 
     @property
+    def docker_installation_playbook(self) -> str:
+        """ Path of the 'docker installation' playbook """
+        return os.path.join(self._playbook_location_dir, 'docker_installation.yml')
+
+    @property
     def file_create_playbook(self) -> str:
         """ Path of the 'file_create' playbook """
         return os.path.join(self._playbook_location_dir, 'file_create.yml')
@@ -52,16 +57,31 @@ class AnsiblePlaybookExecutor(BaseAnsibleExecutor, PermittedPlaybooksMixin):
         """
         assert 'playbook' in params_to_execute, "Argument 'playbook' must be defined for a ansible-playbook execution"
         playbook_name = os.path.basename(params_to_execute['playbook'])
-        logger.info("Initiate '%s' playbook to execute", playbook_name)
 
-        logger.debug("Collected next params for ansible runner: %s", params_to_execute)
+        logger.info("Initiate '%s' playbook to execute", playbook_name)
+        if not params_to_execute.get('extravars'):
+            params_to_execute['extravars'] = {}
+        params_to_execute['extravars'][ansible_const.HOST_PATTERN] = self.host_pattern
+
+        logger.debug("Collected next params (most important) for ansible runner: %s", params_to_execute)
         runner = self._execute_ansible_runner(params_to_execute)
 
-        logger.info("Stats of '%s' playbook execution: %s", playbook_name, runner.stats)
+        logger.debug("Stats of '%s' playbook execution: %s", playbook_name, runner.stats)
         self._check_runner_execution(runner,
                                      host_pattern=params_to_execute['extravars'][ansible_const.HOST_PATTERN],
                                      executed_entity=playbook_name)
         return runner
+
+    @error_log_handler
+    async def install_docker(self) -> None:
+        """ Installs Docker
+        Notes: only 'Debian' 'os family' is supported!
+        """
+        params_to_execute = {
+            'playbook': self.docker_installation_playbook,
+        }
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, self._run_playbook, params_to_execute)
 
     @error_log_handler
     async def echo(self, need_gather_facts: bool) -> None:
@@ -75,13 +95,9 @@ class AnsiblePlaybookExecutor(BaseAnsibleExecutor, PermittedPlaybooksMixin):
         Raises:
             AnsibleExecuteError: if there was mistake during communication to the target host
         """
-        playbook_name = os.path.basename(self.echo_playbook)
-        logger.info("\n[%s] playbook", playbook_name)
-
         params_to_execute = {
             'playbook': self.echo_playbook,
             'extravars': {
-                ansible_const.HOST_PATTERN: self.host_pattern,
                 ansible_const.NEED_GATHER_FACTS: need_gather_facts,
             }
         }
@@ -98,13 +114,9 @@ class AnsiblePlaybookExecutor(BaseAnsibleExecutor, PermittedPlaybooksMixin):
             file_name: basename of creating file
             file_content: content to be added for file
         """
-        playbook_name = os.path.basename(self.file_create_playbook)
-        logger.info("\n[%s] task", playbook_name)
-
         params_to_execute = {
             'playbook': self.file_create_playbook,
             'extravars': {
-                ansible_const.HOST_PATTERN: self.host_pattern,
                 ansible_const.TARGET_DIR: str(target_dir),
                 ansible_const.FILE_NAME: str(file_name),
                 ansible_const.FILE_CONTENT: file_content

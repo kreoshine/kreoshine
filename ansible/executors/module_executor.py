@@ -31,9 +31,11 @@ class AnsibleModuleExecutor(BaseAnsibleExecutor):
         """
         assert 'module' in params_to_execute, "Argument 'module' must be defined for an ad-hoc command execution"
         module_name = params_to_execute['module']
-        logger.info("Initiate '%s' module to execute", module_name)
 
-        logger.debug("Collected next params for ansible runner: %s", params_to_execute)
+        logger.info("Initiate '%s' module to execute", module_name)
+        params_to_execute['host_pattern'] = self.host_pattern
+
+        logger.debug("Collected next params (most important) for ansible runner: %s", params_to_execute)
         runner = self._execute_ansible_runner(params_to_execute)
 
         logger.debug("Stats of '%s' module execution: %s", module_name, runner.stats)
@@ -41,6 +43,20 @@ class AnsibleModuleExecutor(BaseAnsibleExecutor):
                                      host_pattern=params_to_execute['host_pattern'],
                                      executed_entity=module_name)
         return runner
+
+    @error_log_handler(refuse_execute_error_logging=True)
+    async def execute_command(self, command: str) -> None:
+        """ Executes shell' command
+        Args:
+            command: command to execute
+        Notes: this method will not log 'execute' errors!
+        """
+        params_to_execute = {
+            'module': 'ansible.builtin.command',
+            'module_args': command,
+        }
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, self._run_ad_hoc_command, params_to_execute)
 
     @error_log_handler
     async def update_file_line(self, file_path: str, string_to_replace: str, new_string: str) -> None:
@@ -52,12 +68,8 @@ class AnsibleModuleExecutor(BaseAnsibleExecutor):
             string_to_replace: string to be replaced
             new_string: string to be inserted
         """
-        module_name = 'ansible.builtin.lineinfile'
-        logger.info("\n[%s] task", module_name)
-
         params_to_execute = {
-            'host_pattern': self.host_pattern,
-            'module': module_name,
+            'module': 'ansible.builtin.lineinfile',
             'module_args': f"path={str(file_path)}"
                            f"regexp='^{string_to_replace}'"
                            f"line={new_string}"
@@ -75,9 +87,6 @@ class AnsibleModuleExecutor(BaseAnsibleExecutor):
             user_name: name of the user to create
             privilege_escalation_group: 'sudo' group that will be added for user, optional
         """
-        module_name = "ansible.builtin.user"
-        logger.info("\n[%s] task", module_name)
-
         if privilege_escalation_group:
             module_args = f"name={user_name} " \
                           f"shell='/bin/bash' " \
@@ -88,8 +97,7 @@ class AnsibleModuleExecutor(BaseAnsibleExecutor):
                           f"shell='/bin/bash'"
 
         params_to_execute = {
-            'host_pattern': self.host_pattern,
-            'module': module_name,
+            'module': "ansible.builtin.user",
             'module_args': module_args
         }
         loop = asyncio.get_event_loop()
