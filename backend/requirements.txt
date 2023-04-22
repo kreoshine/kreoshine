@@ -1,2 +1,2 @@
 sqlalchemy[asyncio]
-alembic==1.10.3
+alembic~=1.10.3
