@@ -2,16 +2,11 @@ from __future__ import annotations
 import datetime
 from sqlalchemy import ForeignKey
 from sqlalchemy import func
-# from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
-
-
-# class Base(DeclarativeBase):
-#     pass
 
 
 class CardStatus(Base):
