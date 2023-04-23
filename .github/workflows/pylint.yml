@@ -40,7 +40,7 @@ jobs:
     - name: Analysing the code with pylint 2
       run:
         pylint
-          --ignore-paths=^backend/app, ^backend/db/alembic
+          --ignore-paths=^backend/db/alembic
           --max-line-length=120 
           --init-hook="import sys; sys.path.append('backend/db/settings')"
           $(git ls-files '*.py')
