@@ -71,6 +71,8 @@ class Users(Base):
     last_name: Mapped[str]
     mail: Mapped[str] = mapped_column(nullable=False)
     password_hash: Mapped[str]
+    phone: Mapped[str] = mapped_column(nullable=True)
+    password_hash: Mapped[str]
     created_at: Mapped[datetime.datetime] = mapped_column(
         server_default=func.now())
 
@@ -132,3 +134,7 @@ class NewsImg(Base):
         ForeignKey("image.id"), nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(
         server_default=func.now())
+
+
+if __name__ == "__main__":
+    pass
