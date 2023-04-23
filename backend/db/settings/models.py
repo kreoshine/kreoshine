@@ -1,4 +1,4 @@
-# Pylint: disable=C0114,E1102,R0903
+# pylint: disable=C0114,E1102,R0903
 from __future__ import annotations
 import datetime
 from sqlalchemy import ForeignKey
