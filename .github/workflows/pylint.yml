@@ -37,6 +37,8 @@ jobs:
         pylint
           --ignore-paths=^backend/alembic/versions.*$ $(git-ls-files '*.py')
           --max-line-length=120 
-          --init-hook="import sys; sys.path.append('backend/app/services/index'); sys.path.append('backend/db')" 
+          --init-hook="import sys; sys.path.append('backend/app/services/index')" 
+          --init-hook="import sys; sys.path.append(sys.path.append('backend/db')" 
+          
           $(git ls-files '*.py')
           
