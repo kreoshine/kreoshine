@@ -26,7 +26,7 @@ jobs:
         pip install pylint
         if [ -f deploy/pip-freeze.txt ]; then pip install -r deploy/pip-freeze.txt; fi
         if [ -f backend/db/pip-freeze.txt ]; 
-        then pip install -r backend/pip-freeze.txt; fi
+        then pip install -r backend/db/pip-freeze.txt; fi
         if [ -f backend/app/services/index/pip-freeze.txt ]; 
         then pip install -r backend/app/services/index/pip-freeze.txt; fi
     - name: Analysing the code with pylint
