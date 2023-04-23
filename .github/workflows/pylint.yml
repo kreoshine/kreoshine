@@ -25,14 +25,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint
         if [ -f backend/pip-freeze.txt ]; 
-        then pip install -r backend/pip-freeze.txt; fi
+        then pip install -r backend/requirements.txt; fi
         if [ -f deploy/pip-freeze.txt ]; then pip install -r deploy/pip-freeze.txt; fi
         if [ -f backend/app/services/index/pip-freeze.txt ]; 
         then pip install -r backend/app/services/index/pip-freeze.txt; fi
     - name: Analysing the code with pylint
       run:
         pylint
-          --ignore=^backend/alembic/versions/.*$
+          --ignore=backend/alembic/versions/
           --max-line-length=120 
           --init-hook="import sys; sys.path.append('backend/app/services/index')" 
           $(git ls-files '*.py')
