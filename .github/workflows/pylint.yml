@@ -43,5 +43,5 @@ jobs:
           --ignore-paths=^backend/app
           --ignore-paths=^backend/db/alembic/versions.*$ $(git-ls-files '*.py')
           --max-line-length=120 
-          --init-hook="import sys; sys.path.append('backend/db/settings/')" 
+          --init-hook="import sys; sys.path.append('backend/db/settings')" 
           $(git ls-files '*.py')
