@@ -2,10 +2,11 @@ name: Pylint
 
 on:
   push:
-    paths-ignore:
-    - "**backend/alembic/versions/**"
     branches:
     - develop
+    paths-ignore:
+    - '**/alembic/versions/*'
+
 
     
   pull_request:
