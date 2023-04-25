@@ -18,7 +18,7 @@ class CardStatus(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now())
+        server_default=func.now(), default=datetime.datetime.now())
 
 
 class VisibleStatus(Base):
@@ -30,7 +30,7 @@ class VisibleStatus(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now())
+        server_default=func.now(), default=datetime.datetime.now())
 
 
 class Image(Base):
@@ -43,7 +43,7 @@ class Image(Base):
     description: Mapped[str] = mapped_column(nullable=True)
     url: Mapped[str] = mapped_column(nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now())
+        server_default=func.now(), default=datetime.datetime.now())
 
 
 class Service(Base):
@@ -58,7 +58,7 @@ class Service(Base):
         ForeignKey("visible_status.id"), default=2)
     short_deskription: Mapped[str] = mapped_column(nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now())
+        server_default=func.now(), default=datetime.datetime.now())
 
 
 class Users(Base):
@@ -72,10 +72,9 @@ class Users(Base):
     last_name: Mapped[str]
     mail: Mapped[str] = mapped_column(nullable=False)
     password_hash: Mapped[str]
-    phone: Mapped[str] = mapped_column(nullable=True)
     password_hash: Mapped[str]
     created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now())
+        server_default=func.now(), default=datetime.datetime.now())
 
 
 class ClientRequest(Base):
@@ -93,7 +92,7 @@ class ClientRequest(Base):
         ForeignKey("card_status.id"), default=1)
     executor: Mapped[int] = mapped_column(ForeignKey("users.id"), default=1)
     created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now())
+        server_default=func.now(), default=datetime.datetime.now())
 
 
 class News(Base):
@@ -107,7 +106,7 @@ class News(Base):
     status: Mapped[int] = mapped_column(
         ForeignKey("visible_status.id"), default=2)
     created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now())
+        server_default=func.now(), default=datetime.datetime.now())
 
 
 class ServicesImg(Base):
@@ -121,7 +120,7 @@ class ServicesImg(Base):
     image_id: Mapped[str] = mapped_column(
         ForeignKey("image.id"), nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now())
+        server_default=func.now(), default=datetime.datetime.now())
 
 
 class NewsImg(Base):
@@ -134,7 +133,7 @@ class NewsImg(Base):
     image_id: Mapped[str] = mapped_column(
         ForeignKey("image.id"), nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now())
+        server_default=func.now(), default=datetime.datetime.now())
 
 
 if __name__ == "__main__":
