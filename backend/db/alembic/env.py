@@ -1,4 +1,4 @@
-# pylint: disable=C0114,E0611,E1101,C0116,C0411
+# pylint: disable=C0114,E0611,E1101,C0116,C0411, E0401
 import asyncio
 from logging.config import fileConfig
 
