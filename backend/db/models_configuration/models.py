@@ -2,33 +2,23 @@
 from __future__ import annotations
 import datetime
 from sqlalchemy import ForeignKey
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy import func
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import declarative_base
-
-Base = declarative_base()
-
-
-class CardStatus(Base):
-    """
-    Таблица статусов карточки клиента.
-    """
-    __tablename__ = "card_status"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(nullable=False)
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now(), default=datetime.datetime.now())
+from sqlalchemy.orm import DeclarativeBase
+import enum
+from sqlalchemy.dialects.postgresql import ENUM
 
 
-class VisibleStatus(Base):
-    """
-    Таблица статусов публикации.
-    Услуга/новость будет показываться на сайте или нет в зависимости от статуса.
-    """
-    __tablename__ = "visible_status"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(nullable=False)
+class VisibleStatus(enum.Enum):
+    visible = 'visible'
+    invsible = 'invsible'
+
+
+class Base(DeclarativeBase):
+    def __tablename__(cls):
+        return cls.__name__.lower()
     created_at: Mapped[datetime.datetime] = mapped_column(
         server_default=func.now(), default=datetime.datetime.now())
 
@@ -42,8 +32,6 @@ class Image(Base):
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=True)
     url: Mapped[str] = mapped_column(nullable=False)
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now(), default=datetime.datetime.now())
 
 
 class Service(Base):
@@ -54,11 +42,8 @@ class Service(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
-    status: Mapped[int] = mapped_column(
-        ForeignKey("visible_status.id"), default=2)
+
     short_deskription: Mapped[str] = mapped_column(nullable=False)
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now(), default=datetime.datetime.now())
 
 
 class Users(Base):
@@ -73,8 +58,6 @@ class Users(Base):
     mail: Mapped[str] = mapped_column(nullable=False)
     password_hash: Mapped[str]
     password_hash: Mapped[str]
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now(), default=datetime.datetime.now())
 
 
 class ClientRequest(Base):
@@ -88,11 +71,7 @@ class ClientRequest(Base):
     mail: Mapped[str] = mapped_column(nullable=False)
     message: Mapped[str] = mapped_column(nullable=False)
     theme: Mapped[int] = mapped_column(ForeignKey("service.id"))
-    status: Mapped[int] = mapped_column(
-        ForeignKey("card_status.id"), default=1)
     executor: Mapped[int] = mapped_column(ForeignKey("users.id"), default=1)
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now(), default=datetime.datetime.now())
 
 
 class News(Base):
@@ -103,37 +82,6 @@ class News(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     header: Mapped[str] = mapped_column(nullable=False)
     body: Mapped[str] = mapped_column(nullable=False)
-    status: Mapped[int] = mapped_column(
-        ForeignKey("visible_status.id"), default=2)
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now(), default=datetime.datetime.now())
-
-
-class ServicesImg(Base):
-    """
-    Таблица привязки изображений к услугам.
-    """
-    __tablename__ = "services_img"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    service_id: Mapped[str] = mapped_column(
-        ForeignKey("service.id"), nullable=False)
-    image_id: Mapped[str] = mapped_column(
-        ForeignKey("image.id"), nullable=False)
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now(), default=datetime.datetime.now())
-
-
-class NewsImg(Base):
-    """
-    Таблица привязки изображений к новостям.
-    """
-    __tablename__ = "news_img"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    news_id: Mapped[str] = mapped_column(ForeignKey("news.id"), nullable=False)
-    image_id: Mapped[str] = mapped_column(
-        ForeignKey("image.id"), nullable=False)
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now(), default=datetime.datetime.now())
 
 
 if __name__ == "__main__":
