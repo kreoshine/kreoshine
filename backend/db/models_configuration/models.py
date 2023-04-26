@@ -1,22 +1,17 @@
-# pylint: disable=C0114,E1102,R0903
+# pylint: disable=C0114,E1102,R0903, E0213
 from __future__ import annotations
 import datetime
 from sqlalchemy import ForeignKey
-from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy import func
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import DeclarativeBase
-import enum
-from sqlalchemy.dialects.postgresql import ENUM
-
-
-class VisibleStatus(enum.Enum):
-    visible = 'visible'
-    invsible = 'invsible'
 
 
 class Base(DeclarativeBase):
+    """
+    Базовый класс для модели
+    """
     def __tablename__(cls):
         return cls.__name__.lower()
     created_at: Mapped[datetime.datetime] = mapped_column(
