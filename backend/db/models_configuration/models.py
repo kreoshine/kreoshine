@@ -1,7 +1,6 @@
 # pylint: disable=C0114,E1102,R0903, E0213
 from __future__ import annotations
 import datetime
-import enum
 from typing import Literal
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy import ForeignKey
