@@ -2,12 +2,10 @@
 from __future__ import annotations
 import datetime
 from typing import Literal
-from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy import ForeignKey
 from sqlalchemy import func
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
-from sqlalchemy import String
 from sqlalchemy.orm import mapped_column
 import sqlalchemy
 
