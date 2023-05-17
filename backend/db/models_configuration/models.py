@@ -25,16 +25,6 @@ class Base(DeclarativeBase):
         server_default=func.now(), default=datetime.datetime.now())
 
 
-class ImageGroups(Base):
-    """
-    Таблица групп изображений
-    """
-    __tablename__ = "imagegroups"
-    name: Mapped[str] = mapped_column(
-        primary_key=True, nullable=False, unique=True)
-    url_group: Mapped[list[str]] = mapped_column(ARRAY(String))
-
-
 class Service(Base):
     """
     Таблица услуг.
@@ -46,7 +36,6 @@ class Service(Base):
     short_deskription: Mapped[str] = mapped_column(nullable=False)
     status: Mapped[VStatus] = mapped_column(sqlalchemy.Enum(
         "visible", "invsible", name="vstatus_enum"))
-    img_grop: Mapped[str] = mapped_column(ForeignKey("imagegroups.name"))
 
 
 class Users(Base):
@@ -88,7 +77,6 @@ class News(Base):
     body: Mapped[str] = mapped_column(nullable=False)
     status: Mapped[VStatus] = mapped_column(sqlalchemy.Enum(
         "visible", "invsible", name="vstatus_enum"))
-    img_grop: Mapped[str] = mapped_column(ForeignKey("imagegroups.name"))
 
 
 if __name__ == "__main__":

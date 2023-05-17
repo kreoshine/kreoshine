@@ -96,3 +96,4 @@ dmypy.json
 
 # log-files
 *.log
+.vscode/settings.json
