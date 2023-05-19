@@ -1,11 +1,11 @@
-# pylint: disable=C0114,E0611,E1101,C0116,C0411
+# pylint: disable=C0114,E0611,E1101,C0116,C0411, E0401
 import asyncio
 from logging.config import fileConfig
 
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
-from settings import models
+from models_configuration import models
 from alembic import context
 
 # this is the Alembic Config object, which provides
