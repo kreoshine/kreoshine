@@ -15,7 +15,7 @@ VStatus = Literal["visible", "invsible"]
 
 class Base(DeclarativeBase):
     """
-    Базовый класс для модели
+    Base class for the model
     """
     def __tablename__(cls):
         return cls.__name__.lower()
@@ -25,24 +25,24 @@ class Base(DeclarativeBase):
 
 class Service(Base):
     """
-    Таблица услуг.
+    Services table
     """
     __tablename__ = "service"
-    id: Mapped[int] = mapped_column(primary_key=True)
+    service_id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
-    short_deskription: Mapped[str] = mapped_column(nullable=False)
+    short_desсription: Mapped[str] = mapped_column(nullable=False)
     status: Mapped[VStatus] = mapped_column(sqlalchemy.Enum(
         "visible", "invsible", name="vstatus_enum"))
 
 
 class Users(Base):
     """
-    Таблица пользователей/админов базы.
+    Table of database users/admins
     """
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    users_id: Mapped[int] = mapped_column(primary_key=True)
     first_name: Mapped[str] = mapped_column(nullable=False)
     last_name: Mapped[str]
     mail: Mapped[str] = mapped_column(nullable=False)
@@ -51,30 +51,15 @@ class Users(Base):
 
 class ClientRequest(Base):
     """
-    Таблица карточек клиента.
+    Client card table
     """
     __tablename__ = "client_request"
-    id: Mapped[int] = mapped_column(primary_key=True)
+    client_request_id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
-    phone: Mapped[str] = mapped_column(nullable=False)
+    phone: Mapped[str] = mapped_column(nullable=True)
     mail: Mapped[str] = mapped_column(nullable=False)
     message: Mapped[str] = mapped_column(nullable=False)
     theme: Mapped[int] = mapped_column(ForeignKey("service.id"))
-    executor: Mapped[int] = mapped_column(ForeignKey("users.id"), default=1)
-    status: Mapped[Status] = mapped_column(sqlalchemy.Enum(
-        "received", "discussed", "in progress", "closed", name="status_enum"))
-
-
-class News(Base):
-    """
-    Таблица новостей.
-    """
-    __tablename__ = "news"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    header: Mapped[str] = mapped_column(nullable=False)
-    body: Mapped[str] = mapped_column(nullable=False)
-    status: Mapped[VStatus] = mapped_column(sqlalchemy.Enum(
-        "visible", "invsible", name="vstatus_enum"))
 
 
 if __name__ == "__main__":
