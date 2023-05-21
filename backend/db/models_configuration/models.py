@@ -1,21 +1,17 @@
-# pylint: disable=C0114,E1102,R0903, E0213
+# pylint: disable=E1102,R0903,E0213
+"""Module for creating a database model in Declarative Style"""
 from __future__ import annotations
 import datetime
-from typing import Literal
 from sqlalchemy import ForeignKey
 from sqlalchemy import func
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
-import sqlalchemy
-
-Status = Literal["received", "discussed", "in progress", "closed"]
-VStatus = Literal["visible", "invsible"]
 
 
 class Base(DeclarativeBase):
     """
-    Базовый класс для модели
+    Base class for the model
     """
     def __tablename__(cls):
         return cls.__name__.lower()
@@ -25,56 +21,46 @@ class Base(DeclarativeBase):
 
 class Service(Base):
     """
-    Таблица услуг.
+    Services table
     """
     __tablename__ = "service"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(nullable=False)
+    service_id: Mapped[int] = mapped_column(primary_key=True)
+    service_name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
-    short_deskription: Mapped[str] = mapped_column(nullable=False)
-    status: Mapped[VStatus] = mapped_column(sqlalchemy.Enum(
-        "visible", "invsible", name="vstatus_enum"))
+    short_desсription: Mapped[str] = mapped_column(nullable=False)
+    is_visible: Mapped[bool] = mapped_column(default=False)
 
 
 class Users(Base):
     """
-    Таблица пользователей/админов базы.
+    Table of database users/admins
     """
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    first_name: Mapped[str] = mapped_column(nullable=False)
-    last_name: Mapped[str]
-    mail: Mapped[str] = mapped_column(nullable=False)
+    users_id: Mapped[int] = mapped_column(primary_key=True)
+    users_first_name: Mapped[str] = mapped_column(nullable=False)
+    users_last_name: Mapped[str]
+    users_mail: Mapped[str] = mapped_column(nullable=False)
     password_hash: Mapped[str]
 
 
 class ClientRequest(Base):
     """
-    Таблица карточек клиента.
+    Client card table
+    valid values for request_status:
+        "received", 
+        "discussed", 
+        "in progress", 
+        "closed"
     """
     __tablename__ = "client_request"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(nullable=False)
-    phone: Mapped[str] = mapped_column(nullable=False)
-    mail: Mapped[str] = mapped_column(nullable=False)
-    message: Mapped[str] = mapped_column(nullable=False)
-    theme: Mapped[int] = mapped_column(ForeignKey("service.id"))
-    executor: Mapped[int] = mapped_column(ForeignKey("users.id"), default=1)
-    status: Mapped[Status] = mapped_column(sqlalchemy.Enum(
-        "received", "discussed", "in progress", "closed", name="status_enum"))
-
-
-class News(Base):
-    """
-    Таблица новостей.
-    """
-    __tablename__ = "news"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    header: Mapped[str] = mapped_column(nullable=False)
-    body: Mapped[str] = mapped_column(nullable=False)
-    status: Mapped[VStatus] = mapped_column(sqlalchemy.Enum(
-        "visible", "invsible", name="vstatus_enum"))
+    client_request_id: Mapped[int] = mapped_column(primary_key=True)
+    client_name: Mapped[str] = mapped_column(nullable=False)
+    client_phone: Mapped[str] = mapped_column(nullable=True)
+    client_mail: Mapped[str] = mapped_column(nullable=False)
+    client_message: Mapped[str] = mapped_column(nullable=False)
+    theme: Mapped[int] = mapped_column(ForeignKey("service.service_id"))
+    request_status: Mapped[str] = mapped_column(default="received")
 
 
 if __name__ == "__main__":
