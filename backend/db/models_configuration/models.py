@@ -2,7 +2,7 @@
 """Module for creating a database model in Declarative Style"""
 from __future__ import annotations
 import datetime
-from sqlalchemy import ForeignKey
+from uuid import uuid4
 from sqlalchemy import func
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
@@ -19,47 +19,44 @@ class Base(DeclarativeBase):
         server_default=func.now(), default=datetime.datetime.now())
 
 
-class Service(Base):
+class TradeItem(Base):
     """
     Services table
     """
-    __tablename__ = "service"
-    service_id: Mapped[int] = mapped_column(primary_key=True)
-    service_name: Mapped[str] = mapped_column(nullable=False)
+    __tablename__ = "trade_items"
+    trade_items_uid: Mapped[str] = mapped_column(
+        default=uuid4, primary_key=True, unique=True)
+    trade_items_name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
     short_desсription: Mapped[str] = mapped_column(nullable=False)
     is_visible: Mapped[bool] = mapped_column(default=False)
 
 
-class Users(Base):
+class User(Base):
     """
     Table of database users/admins
     """
     __tablename__ = "users"
-
-    users_id: Mapped[int] = mapped_column(primary_key=True)
-    users_first_name: Mapped[str] = mapped_column(nullable=False)
-    users_last_name: Mapped[str]
-    users_mail: Mapped[str] = mapped_column(nullable=False)
+    user_uid: Mapped[str] = mapped_column(
+        default=uuid4, primary_key=True, unique=True)
+    first_name: Mapped[str] = mapped_column(nullable=False)
+    last_name: Mapped[str]
+    mail: Mapped[str] = mapped_column(nullable=False)
     password_hash: Mapped[str]
 
 
 class ClientRequest(Base):
     """
     Client card table
-    valid values for request_status:
-        "received", 
-        "discussed", 
-        "in progress", 
-        "closed"
     """
-    __tablename__ = "client_request"
-    client_request_id: Mapped[int] = mapped_column(primary_key=True)
+    __tablename__ = "client_requests"
+    client_request_uid: Mapped[str] = mapped_column(
+        default=uuid4, primary_key=True, unique=True)
     client_name: Mapped[str] = mapped_column(nullable=False)
     client_phone: Mapped[str] = mapped_column(nullable=True)
     client_mail: Mapped[str] = mapped_column(nullable=False)
-    client_message: Mapped[str] = mapped_column(nullable=False)
-    theme: Mapped[int] = mapped_column(ForeignKey("service.service_id"))
+    message: Mapped[str] = mapped_column(nullable=False)
+    tittle: Mapped[str]
     request_status: Mapped[str] = mapped_column(default="received")
 
 
