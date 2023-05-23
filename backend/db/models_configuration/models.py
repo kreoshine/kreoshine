@@ -28,7 +28,7 @@ class TradeItem(Base):
         default=uuid4(), primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
-    short_desсription: Mapped[str] = mapped_column(nullable=False)
+    short_description: Mapped[str] = mapped_column(nullable=False)
     is_visible: Mapped[bool] = mapped_column(default=False)
 
 
