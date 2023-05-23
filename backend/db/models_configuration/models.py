@@ -21,12 +21,12 @@ class Base(DeclarativeBase):
 
 class TradeItem(Base):
     """
-    Services table
+    Trade Items table
     """
     __tablename__ = "trade_items"
-    trade_items_uid: Mapped[str] = mapped_column(
-        default=uuid4, primary_key=True, unique=True)
-    trade_items_name: Mapped[str] = mapped_column(nullable=False)
+    trade_item_uid: Mapped[str] = mapped_column(
+        default=uuid4(), primary_key=True)
+    name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
     short_desсription: Mapped[str] = mapped_column(nullable=False)
     is_visible: Mapped[bool] = mapped_column(default=False)
@@ -38,7 +38,7 @@ class User(Base):
     """
     __tablename__ = "users"
     user_uid: Mapped[str] = mapped_column(
-        default=uuid4, primary_key=True, unique=True)
+        default=uuid4(), primary_key=True)
     first_name: Mapped[str] = mapped_column(nullable=False)
     last_name: Mapped[str]
     mail: Mapped[str] = mapped_column(nullable=False)
@@ -51,7 +51,7 @@ class ClientRequest(Base):
     """
     __tablename__ = "client_requests"
     client_request_uid: Mapped[str] = mapped_column(
-        default=uuid4, primary_key=True, unique=True)
+        default=uuid4(), primary_key=True)
     client_name: Mapped[str] = mapped_column(nullable=False)
     client_phone: Mapped[str] = mapped_column(nullable=True)
     client_mail: Mapped[str] = mapped_column(nullable=False)
