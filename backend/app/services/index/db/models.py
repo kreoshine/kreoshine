@@ -18,15 +18,13 @@ class Base(DeclarativeBase):
         UUID: UUID,
     }
 
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        server_default=func.now(), default=datetime.datetime.now())
+    created_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now(), default=datetime.datetime.now())
 
 
 class TradeItem(Base):
     """ Represents `trade items` table """
     __tablename__ = "trade_items"
-    trade_item_uid: Mapped[UUID] = mapped_column(
-        primary_key=True, default=uuid.uuid4)
+    trade_item_uid: Mapped[UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     name: Mapped[str]
     description: Mapped[str]
     short_description: Mapped[str]
@@ -36,8 +34,7 @@ class TradeItem(Base):
 class User(Base):
     """ Represents `users` table """
     __tablename__ = "users"
-    user_uid: Mapped[UUID] = mapped_column(
-        primary_key=True, default=uuid.uuid4)
+    user_uid: Mapped[UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     first_name: Mapped[str]
     last_name: Mapped[str]
     mail: Mapped[str]
@@ -47,8 +44,7 @@ class User(Base):
 class ClientRequest(Base):
     """ Represents `client requests` table """
     __tablename__ = "client_requests"
-    client_request_uid: Mapped[UUID] = mapped_column(
-        primary_key=True, default=uuid.uuid4)
+    client_request_uid: Mapped[UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     client_name: Mapped[str]
     client_phone: Mapped[Optional[str]]
     client_mail: Mapped[str]
