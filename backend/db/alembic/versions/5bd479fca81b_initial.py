@@ -41,7 +41,7 @@ def upgrade() -> None:
     op.create_table('users',
     sa.Column('user_uid', sa.UUID()),
     sa.Column('first_name', sa.String()),
-    sa.Column('last_name', sa.String()),
+    sa.Column('last_name', sa.String(), nullable=True),
     sa.Column('mail', sa.String()),
     sa.Column('password_hash', sa.String()),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()')),

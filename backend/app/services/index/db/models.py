@@ -39,7 +39,7 @@ class User(Base):
     user_uid: Mapped[UUID] = mapped_column(
         primary_key=True, default=uuid.uuid4)
     first_name: Mapped[str]
-    last_name: Mapped[str]
+    last_name: Mapped[Optional[str]]
     mail: Mapped[str]
     password_hash: Mapped[str]
 
