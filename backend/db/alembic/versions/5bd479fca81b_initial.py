@@ -23,8 +23,8 @@ def upgrade() -> None:
     sa.Column('client_name', sa.String()),
     sa.Column('client_phone', sa.String(), nullable=True),
     sa.Column('client_mail', sa.String()),
-    sa.Column('message', sa.String()),
-    sa.Column('tittle', sa.String()),
+    sa.Column('message', sa.String(), nullable=True),
+    sa.Column('tittle', sa.String(), nullable=True),
     sa.Column('request_status', sa.String()),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()')),
     sa.PrimaryKeyConstraint('client_request_uid')

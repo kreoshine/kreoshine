@@ -52,6 +52,6 @@ class ClientRequest(Base):
     client_name: Mapped[str]
     client_phone: Mapped[Optional[str]]
     client_mail: Mapped[str]
-    message: Mapped[str]
-    tittle: Mapped[str]
+    message: Mapped[Optional[str]]
+    tittle: Mapped[Optional[str]]
     request_status: Mapped[str] = mapped_column(default="received")
