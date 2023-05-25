@@ -18,8 +18,6 @@ class Base(DeclarativeBase):
         UUID: UUID,
     }
 
-    def __tablename__(cls):
-        return cls.__name__.lower()
     created_at: Mapped[datetime.datetime] = mapped_column(
         server_default=func.now(), default=datetime.datetime.now())
 
