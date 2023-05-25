@@ -53,7 +53,3 @@ class ClientRequest(Base):
     message: Mapped[str] = mapped_column(nullable=False)
     tittle: Mapped[str]
     request_status: Mapped[str] = mapped_column(default="received")
-
-
-if __name__ == "__main__":
-    pass
