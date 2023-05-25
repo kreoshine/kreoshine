@@ -3,6 +3,8 @@
 from __future__ import annotations
 import datetime
 import uuid
+from typing import Optional
+
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import func
 from sqlalchemy.orm import DeclarativeBase
@@ -48,7 +50,7 @@ class ClientRequest(Base):
     client_request_uid: Mapped[UUID] = mapped_column(
         primary_key=True, default=uuid.uuid4)
     client_name: Mapped[str]
-    client_phone: Mapped[str] = mapped_column(nullable=True)
+    client_phone: Mapped[Optional[str]]
     client_mail: Mapped[str]
     message: Mapped[str]
     tittle: Mapped[str]
