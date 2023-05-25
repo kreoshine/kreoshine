@@ -1,8 +1,8 @@
-greenlet~=2.0.2
-sqlalchemy~=2.0.10
-typing-extensions~=4.5.0
-asyncio~=3.4.3
-asyncpg~=0.27.0
-alembic~=1.10.3
-Mako~=1.2.4
-MarkupSafe~=2.1.2
+alembic==1.11.1
+asyncio==3.4.3
+asyncpg==0.27.0
+greenlet==2.0.2
+Mako==1.2.4
+MarkupSafe==2.1.2
+SQLAlchemy==2.0.15
+typing_extensions==4.6.1
