@@ -1,5 +1,5 @@
 # pylint: disable=E1102,R0903,E0213
-"""Module for creating a database model in Declarative Style"""
+""" Module contains models of the database tables in 'Declarative Style' """
 from __future__ import annotations
 import datetime
 import uuid
@@ -11,9 +11,7 @@ from sqlalchemy.orm import mapped_column
 
 
 class Base(DeclarativeBase):
-    """
-    Base class for the model
-    """
+    """ Base class for models """
     type_annotation_map = {
         UUID: UUID,
     }
@@ -23,9 +21,7 @@ class Base(DeclarativeBase):
 
 
 class TradeItem(Base):
-    """
-    Trade Items table
-    """
+    """ Represents `trade items` table """
     __tablename__ = "trade_items"
     trade_item_uid: Mapped[UUID] = mapped_column(
         primary_key=True, default=uuid.uuid4)
@@ -36,9 +32,7 @@ class TradeItem(Base):
 
 
 class User(Base):
-    """
-    Table of database users/admins
-    """
+    """ Represents `users` table """
     __tablename__ = "users"
     user_uid: Mapped[UUID] = mapped_column(
         primary_key=True, default=uuid.uuid4)
@@ -49,9 +43,7 @@ class User(Base):
 
 
 class ClientRequest(Base):
-    """
-    Client card table
-    """
+    """ Represents `client requests` table """
     __tablename__ = "client_requests"
     client_request_uid: Mapped[UUID] = mapped_column(
         primary_key=True, default=uuid.uuid4)
