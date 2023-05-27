@@ -49,3 +49,7 @@
   ansible.builtin.shell:
     cmd: "docker cp {{ local_source_dir }} {{ nginx_container_name }}:{{ root_path_for_main }}/src"
   notify: reload nginx
+
+- name: Change the owner of static files (and group owner as well) to 'nginx'
+  ansible.builtin.shell:
+    cmd: "docker exec -it {{ nginx_container_name }} sh -c 'chown nginx:nginx -R {{ root_path_for_main }}'"
