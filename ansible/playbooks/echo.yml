@@ -1,9 +1,9 @@
 ---
-- name: Communication with '{{ host_name }}' host
+- name: Communication with '{{ host_pattern }}' host
   hosts: "{{ host_pattern }}"
   gather_facts: '{{ need_gather_facts }}'
   become: false
   tasks:
-    - name: Ansible ping with host {{ host_name }}
+    - name: Ansible ping with host {{ host_pattern }}
       ansible.builtin.ping:
         data: "success"

@@ -33,7 +33,7 @@ async def perform_deployment(deploy_mode: str, local_output_dir: str):
     ansible_executor = AnsibleExecutor(host_pattern=target_host,
                                        private_data_dir=local_output_dir,
                                        verbosity=config.ansible.verbosity)
-    logger.debug("Successfully initiate instance of '%s' class", AnsibleExecutor.__name__)
+    logger.debug("Successfully initiate instance of '%s' for '%s' host pattern", AnsibleExecutor.__name__, target_host)
 
     logger.info("Preparing the project for deployment")
     await make_preparation(ansible=ansible_executor)

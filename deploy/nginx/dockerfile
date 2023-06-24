@@ -1,0 +1,16 @@
+FROM nginx
+
+ARG STATIC_SOURCE_DIR
+ARG NGINX_CONFIG_FILE_FOR_MAIN
+ARG ROOT_PATH_FOR_MAIN
+
+RUN rm /etc/nginx/conf.d/default.conf  # delete default nginx config
+
+WORKDIR /
+COPY $NGINX_CONFIG_FILE_FOR_MAIN '/etc/nginx/conf.d/main.conf'
+
+COPY $STATIC_SOURCE_DIR $ROOT_PATH_FOR_MAIN
+
+RUN chown nginx:nginx -R $ROOT_PATH_FOR_MAIN
+
+RUN service nginx start && /etc/init.d/nginx reload
