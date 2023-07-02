@@ -1,5 +1,13 @@
 [development.deploy]
 mode='development'
 
+[development.deploy.nginx]
+image_name = 'nginx-custom'
+container_name = 'kreoshine-nginx'
+
 [production.deploy]
 mode='production'
+
+[production.deploy.nginx]
+image_name = 'nginx-custom'
+container_name = 'kreoshine-nginx'

@@ -9,7 +9,7 @@ import ansible_runner
 from ansible_runner import Runner, AnsibleRunnerException
 
 from ansible import ansible_const
-from ansible.exceptions import AnsibleExecuteError, AnsibleNoHostsMatched, IgnoredAnsibleFailure
+from ansible.exceptions import AnsibleExecuteError, AnsibleNoHostsMatched, IgnoredAnsibleFailure, KnownAnsibleError
 
 logger = logging.getLogger('ansible_deploy')
 
@@ -32,6 +32,17 @@ class BaseAnsibleExecutor:
     def success_rc(self) -> int:
         """ Successful result of ansible task execution """
         return 0
+
+    @property
+    def failed_execution_rc(self) -> int:
+        """ Result code when usually task failed during a play
+
+        Notes: this result code can also mean:
+            - user interrupting;
+            - invalid or unexpected arguments, i.e. ansible-playbook --this-arg-doesnt-exist some_playbook.yml
+            - parsing error was encountered during a dynamic include
+        """
+        return 2
 
     def _execute_ansible_runner(self, params_to_execute: dict, need_to_set_host_pattern: bool = True) -> Runner:
         """        (Synchronously!)
@@ -80,19 +91,27 @@ class BaseAnsibleExecutor:
             IgnoredAnsibleFailure: when expected error was occurred during execution;
                 e.g. "ignore_errors: True" in a task during playbook execution
         """
-        if not runner.stats['processed']:
+        if not runner or not runner.stats.get('processed'):
             logger.warning('None of the hosts were processed!')
             raise AnsibleNoHostsMatched(runner, host_pattern=self.host_pattern)
 
-        if runner.rc != self.success_rc:
-            logger.warning("Unsuccessful ansible result code [rc=%s}]", runner.rc)
-            fatal_message = self.__get_fatal_output_message(runner)
+        if runner.rc == self.success_rc:
+            return
 
+        logger.warning("Unsuccessful ansible result code [rc=%s}]", runner.rc)
+        fatal_message = self.__get_fatal_output_message(runner)
+
+        if runner.rc == self.failed_execution_rc:
             logger.debug("For more info see ansible artifact: %s", runner.config.artifact_dir)
             raise AnsibleExecuteError(runner, host_pattern=self.host_pattern,
                                       ansible_entity_name=executed_entity, fatal_output=fatal_message)
         if runner.stats['ignored']:
             raise IgnoredAnsibleFailure(runner, err_msg="Expected failure has occurred")
+        raise KnownAnsibleError(
+            runner,
+            err_msg="Unexpected error",
+            error_output=fatal_message
+        )
 
     def __get_fatal_output_message(self, runner: Runner) -> Optional[str]:
         """

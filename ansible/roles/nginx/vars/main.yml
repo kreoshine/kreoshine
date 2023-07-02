@@ -1,4 +1,0 @@
----
-# vars file for nginx
-root_path_for_main: /var/www/kreoshine/main
-nginx_container_name: kreoshine-nginx

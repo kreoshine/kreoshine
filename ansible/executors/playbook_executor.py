@@ -44,7 +44,6 @@ class PermittedPlaybooksMixin:
         """ Path of the 'file_create' playbook """
         return os.path.join(self._playbook_location_dir, 'file_create.yml')
 
-
 class AnsiblePlaybookExecutor(BaseAnsibleExecutor, PermittedPlaybooksMixin):
     """  Class is responsible for executing playbooks """
 
@@ -133,6 +132,45 @@ class AnsiblePlaybookExecutor(BaseAnsibleExecutor, PermittedPlaybooksMixin):
             'playbook': self.load_docker_images_playbook,
             'extravars': {
                 ansible_const.IMAGE_NAMES: image_names,
+            }
+        }
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, self._run_playbook, params_to_execute)
+
+    @error_log_handler
+    async def up_nginx_container(
+            self,
+            local_root_to_static: str,
+            local_nginx_deploy_files_dir: str,
+            image_name: str,
+            container_name: str):
+        """ Create custom image for nginx with necessary configuration
+
+        Adds new layers to the image (most important)
+            - deleting base nginx config
+            - include static files and required configuration file
+
+        Args:
+            local_root_to_static: all static files in this directory will be included ias main static files
+                note: will overwrite all existing files in target dir of image
+                warn: if path will be without '/' symbol it is going to include directory itself at destination dir
+            local_nginx_deploy_files_dir: directory with playbook and necessary files for its execution
+            image_name: name of the image to create
+            container_name: name of the container to up
+        """
+        # copy docker file to the host and init container with necessary environment
+        if not local_root_to_static.endswith('/'):
+            local_root_to_static += '/'
+        if not local_nginx_deploy_files_dir.endswith('/'):
+            local_nginx_deploy_files_dir += '/'
+
+        params_to_execute = {
+            'playbook': local_nginx_deploy_files_dir + 'up_nginx_container.yml',
+            'extravars': {
+                ansible_const.LOCAL_ROOT_TO_STATIC: local_root_to_static,
+                ansible_const.NGINX_DEPLOY_FILES_DIR: local_nginx_deploy_files_dir,
+                ansible_const.IMAGE_NAME: image_name,
+                ansible_const.CONTAINER_NAME: container_name
             }
         }
         loop = asyncio.get_event_loop()

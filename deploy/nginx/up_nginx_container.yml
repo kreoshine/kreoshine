@@ -1,0 +1,73 @@
+---
+- name: Configuring custom nginx image
+  hosts: "{{ host_pattern }}"
+  become: true
+  gather_facts: false
+
+  vars:
+    - work_tmp_dir: '/tmp/ansible_nginx_deploy/'
+    # docker arguments
+    - NGINX_CONFIG_FILE_FOR_MAIN: 'main.conf'
+    - STATIC_SOURCE_DIR: 'static-files'
+    - ROOT_PATH_FOR_MAIN: '/var/www/kreoshine/main'
+
+    # extra variables
+    - custom_nginx_image: '{{ image_name }}'
+    - nginx_container_name: '{{ container_name }}'
+    - local_nginx_deploy_files_dir: '{{ nginx_deploy_files_dir }}'
+    - local_dir_with_static_files: '{{ local_root_to_static }}'
+
+  tasks:
+
+    - name: Creating temporary working directory ('{{ work_tmp_dir }}')
+      ansible.builtin.file:
+          path: '{{ work_tmp_dir }}'
+          state: directory
+          mode: '0755'
+      changed_when: true  # make sure this directory will be deleted by 'notify' mechanism
+      notify: "remove tmp dir"
+
+    - name: Copy docker file itself
+      ansible.builtin.copy:
+        src: '{{ local_nginx_deploy_files_dir }}dockerfile'
+        dest: '{{ work_tmp_dir }}'
+
+    - name: Create main config file for nginx in tmp dir  # required to match necessary env for template
+      ansible.builtin.template:
+        src: '{{ local_nginx_deploy_files_dir }}main.conf.j2'
+        dest: '{{ work_tmp_dir }}{{ NGINX_CONFIG_FILE_FOR_MAIN }}'
+        owner: root
+        mode: '0744'
+
+    - name: Copy all files from directory with static files into tmp dir
+      ansible.builtin.copy:
+        src: '{{ local_dir_with_static_files }}'
+        dest: '{{ work_tmp_dir }}{{ STATIC_SOURCE_DIR }}'
+
+    - name: Create nginx image with configuration for main service
+      community.docker.docker_image:
+        name: '{{ custom_nginx_image }}'
+        build:
+          cache_from:
+            - 'nginx'
+          path: '{{ work_tmp_dir }}'
+          args:
+            STATIC_SOURCE_DIR: '{{ STATIC_SOURCE_DIR }}'
+            NGINX_CONFIG_FILE_FOR_MAIN: '{{ NGINX_CONFIG_FILE_FOR_MAIN }}'
+            ROOT_PATH_FOR_MAIN: '{{ ROOT_PATH_FOR_MAIN }}'
+        source: build
+
+    - name: Create nginx container
+      community.docker.docker_container:
+        name:  '{{ nginx_container_name }}'
+        image:  '{{ custom_nginx_image }}'
+        state: started
+        ports:
+          # Publish host port 80 as container port 80
+          - "80:80"
+
+  handlers:
+    - name: remove tmp dir
+      ansible.builtin.file:
+        state: absent
+        path: '{{ work_tmp_dir }}'

@@ -14,6 +14,9 @@ FILE_CONTENT = 'file_content'
 
 # Docker constant
 IMAGE_NAMES = 'image_names'
+IMAGE_NAME = 'image_name'
+CONTAINER_NAME = 'container_name'
 
 # Nginx role template constant
-STATIC_ROOT_PATH = 'static_root_local_path'
+LOCAL_ROOT_TO_STATIC = 'local_root_to_static'
+NGINX_DEPLOY_FILES_DIR = 'nginx_deploy_files_dir'
