@@ -14,3 +14,5 @@ COPY $STATIC_SOURCE_DIR $ROOT_PATH_FOR_MAIN
 RUN chown nginx:nginx -R $ROOT_PATH_FOR_MAIN
 
 RUN service nginx start && /etc/init.d/nginx reload
+
+EXPOSE 80
