@@ -3,5 +3,8 @@ server {
   location / {
     root {{ ROOT_PATH_FOR_MAIN }};
     index index.html;
+    if ($request_uri ~ ^/index.html) {
+        rewrite ^.*$ / permanent;
+    }
   }
 }
